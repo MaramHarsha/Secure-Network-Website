@@ -1,0 +1,17 @@
+{
+   "businessName" : "",
+   "businessWebsite" : "",
+   "city" : "",
+   "continent" : "",
+   "country" : "",
+   "countryCode" : "",
+   "ipName" : "",
+   "ipType" : "Residential",
+   "isp" : "",
+   "lat" : "",
+   "lon" : "",
+   "org" : "",
+   "query" : "127.0.0.1",
+   "region" : "",
+   "status" : "success"
+}
