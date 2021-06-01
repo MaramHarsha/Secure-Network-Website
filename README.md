@@ -8,7 +8,7 @@ It comes with powerful admin panel from which you can view all logs and it is al
 
 Project SECURITY is a powerful Web Application Firewall designed to protect all PHP softwares, from custom scripts to popular shopping cart softwares and CMS applications. It allows any website administrator to benefit from very advanced and powerful security features. It is very fast, optimized and requires very low system resources.
 
-![1](https://user-images.githubusercontent.com/73836896/120387503-a26bcc00-c347-11eb-9919-4f6e4790fbc6.jpg)
+![1](https://user-images.githubusercontent.com/73836896/120387983-2cb43000-c348-11eb-8bf8-e20c5631e614.jpg)
 
 ![2](https://user-images.githubusercontent.com/73836896/120387629-c7f8d580-c347-11eb-8fee-228929088048.jpg)
 
