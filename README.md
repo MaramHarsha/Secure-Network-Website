@@ -9,63 +9,63 @@ It comes with powerful admin panel from which you can view all logs and it is al
 Project SECURITY is a powerful Web Application Firewall designed to protect all PHP softwares, from custom scripts to popular shopping cart softwares and CMS applications. It allows any website administrator to benefit from very advanced and powerful security features. It is very fast, optimized and requires very low system resources.
 
 Main Features
-1.  SQLi Protection
+1.  SQLi Protection:
     Protection from SQL Injections (SQLi) and XSS Vulnerabilities (Cross-Site Scripting).
-2.  Proxy Protection
+2.  Proxy Protection:
     Protection from Proxy, VPN and TOR Visitors or so-called people hiding behind proxies.
-3.  Spam Protection
+3.  Spam Protection:
     Protection from Spammers and Spam Bots that aim to spam your website.
-4.  Input Sanitization
+4.  Input Sanitization:
     Protection Module that automatically sanitizes all incoming and outgoing requests and responses. Real-time scanning of all requests.
-5.  Bad Words Filtering
+5.  Bad Words Filtering:
     Protection module that filters profanity, bad words, bad links, bad sentences and other bad content in real-time.
-6.  DNSBL Integration
+6.  DNSBL Integration:
     Integration with some of the best Spam Databases (DNSBL) to protect your website from Bad Visitors.
-7.  AdBlocker Detection
+7.  AdBlocker Detection:
     Detects and block visitors that use the AdBlockers to hide the ads on the website.
-8.  Intelligent Pattern Recognition
+8.  Intelligent Pattern Recognition:
     Detects Unknown and Zero-Day Attacks and Exploits.
-9.  Ban System
+9.  Ban System:
     Block and redirect Visitors / Users (IP Addresses), Countries, IP Ranges, Operating Systems, Browsers, Internet Service Providers (ISP) and Referrers.
-10. Bad Bots and Crawlers Protection
+10. Bad Bots and Crawlers Protection:
     Stops Bad Bots and Crawlers that will waste your website bandwidth.
-11. Fake Bots Protection
+11. Fake Bots Protection:
     Verifying search engine bots that visit your website whether they are real or fake bots.
-12. Headers Check
+12. Headers Check:
     Every visitor’s response headers will be checked and if there are suspicious objects their access to the website will be denied.
-13. Auto Ban
+13. Auto Ban:
     Function that will automatically ban attackers and threats when bad behavior is detected.
-14. Threat Logs
+14. Threat Logs:
     Each threat and attack is logged into the database, so you can view them later. (No duplicates)
-15. Detailed Logs
+15. Detailed Logs:
     The logs contain many information about the Threat / Attack like Browser, Operating System, Country, State, City, User Agent, Location and other useful information.
-16. IP Lookup
+16. IP Lookup:
     You can investigate IP Address and check if it is present in the script’s database
-17. E-Mail Notifications
+17. E-Mail Notifications:
     You will receive an E-Mail Notifications when attack or threat is detected.
-18. Dashboard with Stats
+18. Dashboard with Stats:
     On the Dashboard you can check the Stats for the protection of your website.
-19. Useful Tools
+19. Useful Tools:
     Collection of Tools such as .htaccess Editor, Hash Generator and other.
-20. Errors Monitoring
+20. Errors Monitoring:
     Useful tool that shows all logged errors from your website.
-21. .htaccess Editor
+21. .htaccess Editor:
     Edit your .htaccess file directly from the Admin Panel, no need to open it in any external editor.
-22. IP & File Whitelist
+22. IP & File Whitelist:
     A list of IP Addresses and Files that will be ignored by the app and will not be blocked.
-23. Live Traffic
+23. Live Traffic:
     Observe your visitors in real time as they interact with your website.
-24. Visit Analytics
+24. Visit Analytics:
     Track and analyze how people use your website.
-25. PHP Configuration Checker
+25. PHP Configuration Checker:
     Check current PHP Configuration for potential security flaws.
-26. Site Information
+26. Site Information:
     Page with a big amount of Information and Statistics about your website.
-27. Very Optimized
+27. Very Optimized:
     The script is very lightweight and won’t slow down your website loading time.
-28. Fully Responsive
+28. Fully Responsive:
     Looks good on many devices and screen resolutions.
-29. Easy to setup
+29. Easy to setup:
     The script is integrated with Installation Wizard that will help you to install the app.
     
     Easy for use
