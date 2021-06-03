@@ -40,7 +40,7 @@ $row   = mysqli_fetch_array($query);
 		<meta name="author" content="Antonov_WEB">
         <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 		<meta name="theme-color" content="#000000">
-        <title>Project SECURITY &rsaquo; Admin Login</title>
+        <title>SECURE Network &rsaquo; Admin Login</title>
 
         <!-- CSS -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css">
@@ -60,7 +60,7 @@ if ($row['dark_mode'] == 1) {
 
 		<div class="card card-outline card-primary">
 		<div class="card-header text-center">
-			<h1><i class="fab fa-get-pocket"></i> Project <b>SECURITY</b></h1>
+			<h1><i class="fab fa-get-pocket"></i> SECURE <b>Network</b></h1>
 		</div>
 		<div class="card">
            <div class="card-body text-white card-primary card-outline">
