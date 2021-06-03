@@ -82,7 +82,7 @@ function head()
     <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 	<meta name="theme-color" content="#000000">
     <link rel="shortcut icon" href="assets/img/favicon.png">
-    <title>Project SECURITY &rsaquo; Admin Panel</title>
+    <title>SECURE Network &rsaquo; Admin Panel</title>
 
 
     <!--STYLESHEET-->
@@ -233,7 +233,7 @@ if ($row['dark_mode'] == 1) {
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
 	<center><a href="dashboard.php" class="brand-link">
-      <span class="brand-text font-weight-light"><i class="fab fa-get-pocket"></i> Project SECURITY</span>
+      <span class="brand-text font-weight-light"><i class="fab fa-get-pocket"></i> SECURE Network</span>
     </a></center>
 	
 	<div class="sidebar">
