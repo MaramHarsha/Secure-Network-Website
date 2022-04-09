@@ -806,7 +806,7 @@ function footer()
     <div class="scroll-btn"><div class="scroll-btn-arrow"></div></div>
     <strong>&copy; <?php
     echo date("Y");
-?> <a href="https://codecanyon.net/item/project-security-website-security-antivirus-firewall/15487703?ref=Antonov_WEB" target="_blank">Project SECURITY</a></strong>
+?> <a href="https://maramsaiharsha.netlify.com" target="_blank">Harsha</a></strong>
 	
 </footer>
 
