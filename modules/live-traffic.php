@@ -265,7 +265,7 @@ if ($srow['live_traffic'] == 1) {
 	
     //Get Country
 	if (psec_getcache($ip, $cache_file) == 'PSEC_NoCache') {
-		$url = 'http://api.ipgeolocationapi.com/geolocate/' . $ip;
+		$url = 'http://ip.nf/' . $ip . '.json';
 		$ch  = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -278,8 +278,8 @@ if ($srow['live_traffic'] == 1) {
 		curl_close($ch);
         
         $ip_data = @json_decode($curl_response);
-        if ($ip_data->{'alpha2'} != NULL && $ip_data->{'alpha2'} != "Internal Server Error") {
-            $country_code = $ip_data->{'alpha2'};
+        if ($ip_data->ip->country_code != NULL) {
+            @$country_code = $ip_data->ip->country_code;
         } else {
             $country_code = "XX";
         }

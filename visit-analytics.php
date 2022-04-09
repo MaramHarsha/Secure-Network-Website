@@ -2,6 +2,23 @@
 require_once "core.php";
 head();
 
+// Purge logs older than 30 days
+$datetod = strtotime(date('d F Y', strtotime('-30 days')));
+
+$table = $prefix . 'live-traffic';
+$query2 = $mysqli->query("SELECT id, date FROM `$table` ORDER BY id ASC");
+while ($row2 = $query2->fetch_assoc()) {
+	if (strtotime($row2['date']) < $datetod) {
+		$id     = $row2['id'];
+		$query3 = $mysqli->query("DELETE FROM `$table` WHERE id = '$id'");
+	}
+}
+
+if (isset($_GET['delete-all'])) {
+    $table = $prefix . 'live-traffic';
+    $query = $mysqli->query("TRUNCATE TABLE `$table`");
+}
+
 //Today Stats
 @$date = @date('d F Y');
 @$ctime = @date("H:i", strtotime('-30 seconds'));
@@ -95,6 +112,9 @@ $pcount3 = $pquery3->num_rows;
                 <div class="card card-primary card-outline">
 						<div class="card-header">
 							<h3 class="card-title">Visit Analytics</h3>
+							<div class="float-sm-right">
+								<a href="?delete-all" class="btn btn-flat btn-danger btn-sm"><i class="fas fa-trash"></i> Delete Data</a>
+							</div>
 						</div>
 						<div class="card-body">
 						

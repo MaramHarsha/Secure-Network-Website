@@ -73,7 +73,7 @@ if ($db) {
 ?>
 <center>
 <div class="alert alert-success">
-	Secure Network has been successfully installed on your website!
+	Project SECURITY has been successfully installed on your website!
 </div>
     
 <div class="alert alert-warning">
@@ -81,9 +81,9 @@ if ($db) {
 </div>
     
 <div class="alert alert-info"> 
-<b>Put the integration code in a main <i>.php</i> file of your website to integrate it with Secure Network.</b><br />
+<b>Put the integration code in a main <i>.php</i> file of your website to integrate it with Project SECURITY.</b><br />
 (<b>Examples</b>: database config (connection) .php file; functions .php file; header .php file; core .php file that is included by all other .php files.
-Change "<b>SecureNetwork_folder</b>" with the path on which you installed the product)
+Change "<b>projectsecurity_folder</b>" with the path on which you installed the product)
 <br /><br />
 	<kbd>
 	    include_once "projectsecurity_folder/config.php";<br />
@@ -91,7 +91,7 @@ Change "<b>SecureNetwork_folder</b>" with the path on which you installed the pr
 	</kbd>
 </div>
     
-<a href="../" class="btn-success btn btn-block"><i class="fas fa-arrow-circle-right"></i> Continue to Secure Network</a>
+<a href="../" class="btn-success btn btn-block"><i class="fas fa-arrow-circle-right"></i> Continue to Project SECURITY</a>
 </center>
 <?php
 footer();

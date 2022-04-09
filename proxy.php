@@ -303,17 +303,19 @@ if ($row['protection'] == 4) {
 									<div class="row">
                                     <div class="col-md-12">
                                         <div class="card card-body bg-light">
-                                        <center>
-                                        <h5>Detection Method #2</h5><hr />
-                                        Checks the visitor's HTTP Headers for Proxy Elements
-                                        <br /><br />
-                                        
-											<input type="checkbox" name="protection2" class="psec-switch" <?php
+											<div class="row">
+												<div class="col-md-10">
+													<h5>Detection Method #2</h5>
+												</div>
+												<div class="col-md-2">
+													<input type="checkbox" name="protection2" class="psec-switch" <?php
 if ($row['protection2'] == 1) {
     echo 'checked="checked"';
 }
 ?> />
-                                        </center>
+												</div>
+											</div><hr />
+											Checks the visitor's HTTP Headers for Proxy Elements
                                         </div>
                                     </div>
                                     

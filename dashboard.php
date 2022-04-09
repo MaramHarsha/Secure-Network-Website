@@ -264,10 +264,12 @@ if ($row['protection'] == 1 OR $row['protection2'] == 1) {
 						    <center>
 							<strong><i class="fas fa-keyboard"></i> Spam</strong><br />Protection<br /><hr />
 <?php
-$table = $prefix . 'spam-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-if ($row['protection'] == 1) {
+$table    = $prefix . 'spam-settings';
+$query    = $mysqli->query("SELECT * FROM `$table`");
+$row      = $query->fetch_assoc();
+$tablesp2 = $prefix . 'dnsbl-databases';
+$querysp2 = $mysqli->query("SELECT * FROM `$tablesp2`");
+if ($row['protection'] == 1 && mysqli_num_rows($querysp2) > 0) {
     echo '
 					        <h4><span class="badge badge-success"><i class="fas fa-check"></i> ON</span></h4>
 ';

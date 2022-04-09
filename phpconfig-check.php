@@ -157,7 +157,7 @@ function is_writable_or_chmodable($fn)
     if (!extension_loaded("posix")) {
         return is_writable($fn);
     }
-    $stat = stat($fn);
+    $stat = @stat($fn);
     if (!$stat) {
         return false;
     }
@@ -829,7 +829,7 @@ function test_all_ini_entries()
                 break;
             case 'extension_dir':
                 if ($v !== NULL && $v !== "") {
-                    if (realpath($v) === FALSE) {
+                    if (@realpath($v) === FALSE) {
                         list($result, $reason) = array(
                             TEST_Skipped,
                             "path is invalid or not accessible."
@@ -1427,11 +1427,11 @@ function test_log_in_document_root($inientry, $value_if_not_set = null)
     } elseif (!isset($_SERVER['DOCUMENT_ROOT'])) {
         tres($meta, TEST_Skipped, "DOCUMENT_ROOT not set.");
     } else {
-        $log_realpath           = realpath($inivalue);
-        $document_root_realpath = realpath($_SERVER['DOCUMENT_ROOT']);
+        $log_realpath           = @realpath($inivalue);
+        $document_root_realpath = @realpath($_SERVER['DOCUMENT_ROOT']);
         if ($log_realpath === FALSE) {
             /* Maybe new/nonexistent file? => use dirname instead */
-            $log_realpath = realpath(dirname($inivalue));
+            $log_realpath = @realpath(dirname($inivalue));
         }
         if ($log_realpath === FALSE) {
             tres($meta, TEST_Skipped, "$inientry invalid or relative path.");
@@ -1478,7 +1478,7 @@ function test_include_path_writable()
             continue;
         }
         $checked++;
-        $absdir = realpath($dir);
+        $absdir = @realpath($dir);
         if ($absdir === FALSE) {
             continue;
         } // path does not exist? -> ignore
@@ -1508,13 +1508,13 @@ function test_sendmail_writable()
     $sm_chunks     = explode(' ', $sm);
     $sm_executable = $sm_chunks[0];
     $sm_dir        = dirname($sm_executable);
-    if (is_file($sm_executable) || is_link($sm_executable)) {
+    if (@is_file($sm_executable) || @is_link($sm_executable)) {
         if (is_writable_or_chmodable($sm_executable)) {
             tres($meta, TEST_Critical, "sendmail is writable", "The configured sendmail_path can be changed by the current user. Please change its permissions.");
             return;
         }
     }
-    if (is_writable_or_chmodable(dirname($sm_executable)) || is_writable_or_chmodable(dirname(realpath($sm_executable)))) {
+    if (is_writable_or_chmodable(dirname($sm_executable)) || is_writable_or_chmodable(dirname(@@realpath($sm_executable)))) {
         tres($meta, TEST_Critical, "The directory containing the sendmail_path executable is writable or its permission can be changed by the current user.");
         return;
     }

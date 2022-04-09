@@ -81,10 +81,12 @@ if (isset($_POST['save'])) {
 				<div class="col-md-8">
                     	    
 <?php
-$table = $prefix . 'spam-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = mysqli_fetch_array($query);
-if ($row['protection'] == 1) {
+$table    = $prefix . 'spam-settings';
+$query    = $mysqli->query("SELECT * FROM `$table`");
+$row      = mysqli_fetch_array($query);
+$tablesp2 = $prefix . 'dnsbl-databases';
+$querysp2 = $mysqli->query("SELECT * FROM `$tablesp2`");
+if ($row['protection'] == 1 && mysqli_num_rows($querysp2) > 0) {
     echo '
               <div class="card card-solid card-success">
 ';
@@ -99,7 +101,7 @@ if ($row['protection'] == 1) {
 						</div>
 						<div class="card-body">
 <?php
-if ($row['protection'] == 1) {
+if ($row['protection'] == 1 && mysqli_num_rows($querysp2) > 0) {
     echo '
         <h1 style="color: #47A447;"><i class="fas fa-check-circle"></i> Enabled</h1>
         <p>The website is protected from <strong>Spammers</strong></p>

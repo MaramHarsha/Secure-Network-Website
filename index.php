@@ -40,7 +40,7 @@ $row   = mysqli_fetch_array($query);
 		<meta name="author" content="Antonov_WEB">
         <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 		<meta name="theme-color" content="#000000">
-        <title>SECURE Network &rsaquo; Admin Login</title>
+        <title>Project SECURITY &rsaquo; Admin Panel</title>
 
         <!-- CSS -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css">
@@ -60,7 +60,7 @@ if ($row['dark_mode'] == 1) {
 
 		<div class="card card-outline card-primary">
 		<div class="card-header text-center">
-			<h1><i class="fab fa-get-pocket"></i> SECURE <b>Network</b></h1>
+			<h1><i class="fab fa-get-pocket"></i> Project <b>SECURITY</b></h1>
 		</div>
 		<div class="card">
            <div class="card-body text-white card-primary card-outline">
@@ -142,7 +142,7 @@ if ($error == 1) {
                     <button type="submit" name="signin" class="btn btn-md btn-primary btn-block btn-flat"><i class="fas fa-sign-in-alt"></i>
 &nbsp;Sign In</button>
                     <p class="mb-1">
-                        <a href="#" target="_blank">Forgotten password</a>
+                        <a href="https://codecanyon.net/item/project-security-website-security-antivirus-firewall/15487703/faqs/44196" target="_blank">Forgotten password</a>
                     </p>
                 </div>
             </div>

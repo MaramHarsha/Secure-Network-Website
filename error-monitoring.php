@@ -105,7 +105,7 @@ if ($row['display_errors'] == 1)
 $log_errors = ini_get('log_errors');
 
 if (!$log_errors)
-    echo '<p>Error Logging is disabled on your server</p>';
+    echo '<div class="alert alert-info">Error Logging is disabled on your server</div>';
 
 $error_log = ini_get('error_log');
 $logs      = array(
@@ -115,7 +115,7 @@ $count     = 10000;
 $lines     = array();
 
 foreach ($logs as $log) {
-    if (is_readable($log))
+    if (@is_readable($log))
         $lines = array_merge($lines, last_lines($log, $count));
 }
 
@@ -136,7 +136,7 @@ foreach ($lines as $key => $line) {
     $lines[$key] = compact('time', 'error');
 }
 ?>
-        <table id="dt-basic" class="table table-bordered table-hover">
+        <table id="dt-basic" class="table table-bordered table-hover table-sm">
         <thead class="<?php echo $thead; ?>">
 			<tr>
 				<th><i class="fas fa-calendar"></i> Date & Time</th>

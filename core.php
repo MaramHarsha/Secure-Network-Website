@@ -82,7 +82,7 @@ function head()
     <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 	<meta name="theme-color" content="#000000">
     <link rel="shortcut icon" href="assets/img/favicon.png">
-    <title>SECURE Network &rsaquo; Admin Panel</title>
+    <title>Project SECURITY &rsaquo; Admin Panel</title>
 
 
     <!--STYLESHEET-->
@@ -233,7 +233,7 @@ if ($row['dark_mode'] == 1) {
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
 	<center><a href="dashboard.php" class="brand-link">
-      <span class="brand-text font-weight-light"><i class="fab fa-get-pocket"></i> SECURE Network</span>
+      <span class="brand-text font-weight-light"><i class="fab fa-get-pocket"></i> Project SECURITY</span>
     </a></center>
 	
 	<div class="sidebar">
@@ -423,10 +423,12 @@ if ($row['dark_mode'] == 1) {
 ?>">
               <i class="fas fa-keyboard"></i>&nbsp; <p>Spam
 <?php
-    $table = $prefix . 'spam-settings';
-    $query = $mysqli->query("SELECT * FROM `$table`");
-    $row   = mysqli_fetch_array($query);
-    if ($row['protection'] == 1) {
+    $table    = $prefix . 'spam-settings';
+    $query    = $mysqli->query("SELECT * FROM `$table`");
+    $row      = mysqli_fetch_array($query);
+    $tablesp2 = $prefix . 'dnsbl-databases';
+    $querysp2 = $mysqli->query("SELECT * FROM `$tablesp2`");
+    if ($row['protection'] == 1 && mysqli_num_rows($querysp2) > 0) {
         echo '<span class="right badge badge-success">ON</span>';
     } else {
         echo '<span class="right badge badge-danger">OFF</span>';
@@ -804,7 +806,7 @@ function footer()
     <div class="scroll-btn"><div class="scroll-btn-arrow"></div></div>
     <strong>&copy; <?php
     echo date("Y");
-?> <a href="https://maramsaiharsha.netlify.com" target="_blank">Harsha</a></strong>
+?> <a href="https://codecanyon.net/item/project-security-website-security-antivirus-firewall/15487703?ref=Antonov_WEB" target="_blank">Project SECURITY</a></strong>
 	
 </footer>
 

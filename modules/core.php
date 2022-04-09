@@ -105,7 +105,7 @@ function psec_mail($mysqli, $prefix, $site_url, $projectsecurity_path, $type)
 {
     global $ip, $date, $time, $browser, $os, $page, $referer, $to, $srow;
     
-    $email   = 'notifications@' . $_SERVER['SERVER_NAME'] . '';
+    $email   = 'notifications@' . $_SERVER['SERVER_NAME'] . ''; // Strip www.
     $to      = $srow['email'];
     $subject = 'Project SECURITY - ' . $type . '';
     $message = '
@@ -122,8 +122,7 @@ function psec_mail($mysqli, $prefix, $site_url, $projectsecurity_path, $type)
 				';
     $headers = 'MIME-Version: 1.0' . "\r\n";
     $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-    $headers .= 'To: ' . $to . ' <' . $to . '>' . "\r\n";
-    $headers .= 'From: ' . $email . ' <' . $email . '>' . "\r\n";
+    $headers .= 'From: ' . $email . '';
     @mail($to, $subject, $message, $headers);
 }
 ?>
