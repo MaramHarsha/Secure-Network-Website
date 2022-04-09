@@ -98,3 +98,21 @@ MySQLi
 2. Create a MySQL database (Your hosting provider can assist)
 3. Visit your website where you uploaded the files (eg: yourwebsite.com/security/)
 4. The Installation Wizard will open automatically, just follow the steps.
+
+
+Change logs latest Version
+
+- Added IPv6 address support
+- Improved compatibility with PHP 8.1
+- Improved Bad Bots protection module
+- Improved SQLi protection module
+- Code quality improvements
+- Fixed Bugs
+- Optimized source code (Performance Improvements)
+- Improved cache module
+- Improved Country Bans module
+- Improved Live Traffic module
+- Improved Core
+- Improved IP Detection
+- Improved Live Traffic module
+- Improved Core
