@@ -1,31 +1,28 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 // Purge logs older than 30 days
 $datetod = strtotime(date('d F Y', strtotime('-30 days')));
 
-$table = $prefix . 'live-traffic';
-$query2 = $mysqli->query("SELECT id, date FROM `$table` ORDER BY id ASC");
+$query2 = $mysqli->query("SELECT id, date FROM `psec_live-traffic` ORDER BY id ASC");
 while ($row2 = $query2->fetch_assoc()) {
 	if (strtotime($row2['date']) < $datetod) {
 		$id     = $row2['id'];
-		$query3 = $mysqli->query("DELETE FROM `$table` WHERE id = '$id'");
+		$query3 = $mysqli->query("DELETE FROM `psec_live-traffic` WHERE id = '$id'");
 	}
 }
 
 if (isset($_GET['delete-all'])) {
-    $table = $prefix . 'live-traffic';
-    $query = $mysqli->query("TRUNCATE TABLE `$table`");
+    $query = $mysqli->query("TRUNCATE TABLE `psec_live-traffic`");
 }
 
 if (isset($_POST['save'])) {
-    $table = $prefix . 'settings';
-    
+
     if (isset($_POST['live_traffic'])) {
-        $live_traffic = 1;
+        $settings['live_traffic'] = 1;
     } else {
-        $live_traffic = 0;
+        $settings['live_traffic'] = 0;
 		
 		$files = glob('modules/cache/live-traffic/*'); // Get all cache file names
 		foreach($files as $file){ // Iterate cache files
@@ -35,7 +32,7 @@ if (isset($_POST['save'])) {
 		}
     }
     
-    $query = $mysqli->query("UPDATE `$table` SET live_traffic='$live_traffic' WHERE id=1");
+    file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
     
     echo '<meta http-equiv="refresh" content="0; url=live-traffic.php" />';
 }
@@ -87,7 +84,7 @@ if (isset($_POST['save'])) {
 						<div class="form-group">
 												<label class="control-label">Live Traffic - Monitoring</label><br />
 												<input type="checkbox" name="live_traffic" class="psec-switch" <?php
-if ($row['live_traffic'] == 1) {
+if ($settings['live_traffic'] == 1) {
     echo 'checked';
 }
 ?> />
@@ -107,7 +104,7 @@ if ($row['live_traffic'] == 1) {
 						</div>
 						<div class="card-body">
 				
-<table id="dt-basic" class="table table-sm table-bordered table-hover">
+<table id="dt-basiclivetraff" class="table table-sm table-bordered table-hover">
 									<thead class="<?php echo $thead; ?>">
 										<tr>
 											<th>IP Address</th>
@@ -122,8 +119,7 @@ if ($row['live_traffic'] == 1) {
 									</thead>
 									<tbody>
 <?php
-$table = $prefix . 'live-traffic';
-$query = $mysqli->query("SELECT id, bot, ip, country, country_code, browser, browser_code, os, os_code, domain, request_uri, date, time FROM `$table` ORDER BY id DESC");
+$query = $mysqli->query("SELECT id, bot, ip, country, country_code, browser, browser_code, os, os_code, domain, request_uri, date, time FROM `psec_live-traffic` ORDER BY id DESC");
 while ($row = $query->fetch_assoc()) {
     echo '
 										<tr>
@@ -160,33 +156,6 @@ while ($row = $query->fetch_assoc()) {
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-$(document).ready(function() {
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-		"order": [[ 6, "desc" ]],
-		dom: 'Bfrtip',
-		buttons: [
-            'excelHtml5',
-            'csvHtml5',
-            'pdfHtml5'
-        ],
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-
-var elems = Array.prototype.slice.call(document.querySelectorAll('.psec-switch'));
-
-elems.forEach(function(html) {
-  var switchery = new Switchery(html, {secondaryColor: 'red'});
-});
-</script>
 <?php
 footer();
 ?>

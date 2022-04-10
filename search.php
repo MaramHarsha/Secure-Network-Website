@@ -1,5 +1,5 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_GET['ip'])) {
@@ -15,7 +15,7 @@ if (isset($_GET['ip'])) {
         exit();
     }
     
-    $url = 'http://extreme-ip-lookup.com/json/' . $ip;
+    $url = 'https://ipapi.co/' . $ip . '/json/';
     $ch  = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -28,14 +28,14 @@ if (isset($_GET['ip'])) {
     curl_close($ch);
     
     $ip_data = @json_decode($ipcontent);
-    if ($ip_data && $ip_data->{'status'} == 'success') {
-        $country     = $ip_data->{'country'};
-        $countrycode = $ip_data->{'countryCode'};
+    if ($ip_data && !isset($ip_data->{'error'})) {
+        $country     = $ip_data->{'country_name'};
+        $countrycode = $ip_data->{'country_code'};
         $region      = $ip_data->{'region'};
         $city        = $ip_data->{'city'};
-        $latitude    = $ip_data->{'lat'};
-        $longitude   = $ip_data->{'lon'};
-        $isp         = $ip_data->{'isp'};
+        $latitude    = $ip_data->{'latitude'};
+        $longitude   = $ip_data->{'longitude'};
+        $isp         = $ip_data->{'org'};
     } else {
         $country     = "Unknown";
         $countrycode = "XX";
@@ -142,7 +142,7 @@ if (isset($_GET['ip'])) {
                                         <label class="control-label">
                                             <i class="fas fa-location-arrow"></i> Possible Location
                                         </label>
-									    <center><div id="mapdiv" style="width: 99%; height:450px"></div></center>
+									    <center><div id="mapdiv" class="map_div"></div></center>
 						            
                         </div>
                 </div>
@@ -153,18 +153,17 @@ if (isset($_GET['ip'])) {
 						</div>
 						<div class="card-body">
 <?php
-    $table  = $prefix . 'logs';
-    $result = $mysqli->query("SELECT * FROM `$table` WHERE ip = '$ip'");
+    $result = $mysqli->query("SELECT * FROM `psec_logs` WHERE ip = '$ip'");
     
     if (mysqli_num_rows($result) == 0) {
         echo '<div class="callout callout-info">
-  <strong>No results found for this IP Address</strong>
-</div>';
+				<strong>No results found for this IP Address</strong>
+			  </div>';
     } else {
 ?>
                                 <div class="table-responsive">
 								<table class="table table-bordered table-hover table-sm">
-									<thead>
+									<thead class="<?php echo $thead; ?>">
 										<tr>
 								          <th><i class="fas fa-list-ol"></i> ID</th>
 						                  <th><i class="fas fa-user"></i> IP Address</th>
@@ -211,18 +210,17 @@ if (isset($_GET['ip'])) {
 						</div>
 						<div class="card-body">
 <?php
-    $table = $prefix . 'bans';
-    $query = $mysqli->query("SELECT * FROM `$table` WHERE ip = '$ip'");
+    $query = $mysqli->query("SELECT * FROM `psec_bans` WHERE ip = '$ip'");
     
     if (mysqli_num_rows($query) == 0) {
         echo '<div class="callout callout-info">
-  <strong>No results found for this IP Address</strong>
-</div>';
+				<strong>No results found for this IP Address</strong>
+			  </div>';
     } else {
 ?>
                                 <div class="table-responsive">
                                 <table class="table table-bordered table-hover table-sm">
-									<thead>
+									<thead class="<?php echo $thead; ?>">
 										<tr>
 										  <th><i class="fas fa-list-ul"></i> ID</th>
 						                  <th><i class="fas fa-user"></i> IP Address</th>
@@ -284,13 +282,14 @@ if (isset($_GET['ip'])) {
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
+
+<script type="text/javascript">
     map = new OpenLayers.Map("mapdiv");
     map.addLayer(new OpenLayers.Layer.OSM());
 
     var lonLat = new OpenLayers.LonLat(<?php
     echo $longitude;
-?>,<?php
+?>, <?php
     echo $latitude;
 ?>)
           .transform(
@@ -298,12 +297,12 @@ if (isset($_GET['ip'])) {
             map.getProjectionObject()
           );
           
-    var zoom=18;
-    var markers = new OpenLayers.Layer.Markers( "Markers" );
+    var zoom = 18;
+    var markers = new OpenLayers.Layer.Markers("Markers");
 	
     map.addLayer(markers);
     markers.addMarker(new OpenLayers.Marker(lonLat));
-    map.setCenter (lonLat, zoom);
+    map.setCenter(lonLat, zoom);
 </script>
 <?php
     footer();

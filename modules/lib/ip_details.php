@@ -1,6 +1,6 @@
 <?php
 //Getting Country, City, Region, Map Location and Internet Service Provider
-$url = 'http://extreme-ip-lookup.com/json/' . $ip;
+$url = 'https://ipapi.co/' . $ip . '/json/';
 $ch  = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -13,14 +13,14 @@ $ipcontent = curl_exec($ch);
 curl_close($ch);
 
 $ip_data = @json_decode($ipcontent);
-if ($ip_data && $ip_data->{'status'} == 'success') {
-    $country      = $ip_data->{'country'};
-    $country_code = $ip_data->{'countryCode'};
+if ($ip_data && !isset($ip_data->{'error'})) {
+    $country      = $ip_data->{'country_name'};
+    $country_code = $ip_data->{'country_code'};
     $region       = $ip_data->{'region'};
     $city         = $ip_data->{'city'};
-    $latitude     = $ip_data->{'lat'};
-    $longitude    = $ip_data->{'lon'};
-    $isp          = $ip_data->{'isp'};
+    $latitude     = $ip_data->{'latitude'};
+    $longitude    = $ip_data->{'longitude'};
+    $isp          = $ip_data->{'org'};
 } else {
     $country      = "Unknown";
     $country_code = "XX";

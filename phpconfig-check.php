@@ -1,5 +1,5 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 ?>
 <div class="content-wrapper">
@@ -41,7 +41,7 @@ head();
                             </div>
 						</div>
 						<div class="card-body">
-						    <div class="table-responsive">
+						    <div class="table table-bordered table-responsive table-hover">
 <?php
 ob_start();
 phpinfo();
@@ -1574,7 +1574,7 @@ function e($str)
 }
 ?>
 
-	<table class="table table-bordered" id="dt-basic">
+	<table class="table table-bordered" id="dt-basicphpconf">
 	<thead class="<?php echo $thead; ?>">
 	<tr>
 		<th>Risk</th>
@@ -1708,23 +1708,6 @@ foreach ($all_result_codes as $sev) {
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-$("table").addClass("table table-bordered table-hover");
-
-$(document).ready(function() {
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-		"order": [],
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>
 <?php
 footer();
 ?>

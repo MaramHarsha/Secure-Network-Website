@@ -1,11 +1,11 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_GET['delete-id'])) {
     $id    = (int) $_GET["delete-id"];
-    $table = $prefix . 'ip-whitelist';
-    $query = $mysqli->query("DELETE FROM `$table` WHERE id='$id'");
+
+    $query = $mysqli->query("DELETE FROM `psec_ip-whitelist` WHERE id='$id'");
 }
 ?>
 <div class="content-wrapper">
@@ -36,7 +36,6 @@ if (isset($_GET['delete-id'])) {
 
 <?php
 if (isset($_POST['add'])) {
-    $table = $prefix . 'ip-whitelist';
     $ip    = addslashes(htmlspecialchars($_POST['ip']));
     $notes = addslashes(htmlspecialchars($_POST['notes']));
     if (!filter_var($ip, FILTER_VALIDATE_IP)) {
@@ -46,7 +45,7 @@ if (isset($_POST['add'])) {
         </div>
 		';
     } else {
-        $queryvalid = $mysqli->query("SELECT * FROM `$table` WHERE ip='$ip' LIMIT 1");
+        $queryvalid = $mysqli->query("SELECT * FROM `psec_ip-whitelist` WHERE ip='$ip' LIMIT 1");
         $validator  = mysqli_num_rows($queryvalid);
         if ($validator > "0") {
             echo '<br />
@@ -55,7 +54,7 @@ if (isset($_POST['add'])) {
         </div>
 		';
         } else {
-            $query = $mysqli->query("INSERT INTO `$table` (ip, notes) VALUES('$ip', '$notes')");
+            $query = $mysqli->query("INSERT INTO `psec_ip-whitelist` (ip, notes) VALUES('$ip', '$notes')");
         }
     }
 }
@@ -67,8 +66,8 @@ if (isset($_POST['add'])) {
 				<?php
 if (isset($_GET['edit-id'])) {
     $id    = (int) $_GET["edit-id"];
-    $table = $prefix . 'ip-whitelist';
-    $sql   = $mysqli->query("SELECT * FROM `$table` WHERE id = '$id'");
+
+    $sql   = $mysqli->query("SELECT * FROM `psec_ip-whitelist` WHERE id = '$id'");
     $row   = mysqli_fetch_assoc($sql);
     if (empty($id)) {
         echo '<meta http-equiv="refresh" content="0; url=ip-whitelist.php">';
@@ -78,16 +77,17 @@ if (isset($_GET['edit-id'])) {
     }
     
     if (isset($_POST['edit'])) {
-        $table = $prefix . 'ip-whitelist';
+        
         $ip    = addslashes(htmlspecialchars($_POST['ip']));
         $notes = $_POST['notes'];
+        
         if (!filter_var($ip, FILTER_VALIDATE_IP)) {
             echo '<br />
 		<div class="callout callout-danger">
                 <p><i class="fas fa-exclamation-triangle"></i> The entered <strong>IP Address</strong> is invalid.</p>
         </div>';
         } else {
-            $queryvalid = $mysqli->query("SELECT * FROM `$table` WHERE ip='$ip' AND id != '$id' LIMIT 1");
+            $queryvalid = $mysqli->query("SELECT * FROM `psec_ip-whitelist` WHERE ip='$ip' AND id != '$id' LIMIT 1");
             $validator  = mysqli_num_rows($queryvalid);
             if ($validator > "0") {
                 echo '<br />
@@ -95,7 +95,7 @@ if (isset($_GET['edit-id'])) {
                 <p><i class="fas fa-info-circle"></i> This <strong>IP Address</strong> is already whitelisted.</p>
         </div>';
             } else {
-                $query = $mysqli->query("UPDATE `$table` SET ip='$ip', `notes`='$notes' WHERE id='$id'");
+                $query = $mysqli->query("UPDATE `psec_ip-whitelist` SET ip='$ip', `notes`='$notes' WHERE id='$id'");
 				echo '<meta http-equiv="refresh" content="0; url=ip-whitelist.php">';
             }
         }
@@ -139,7 +139,7 @@ if (isset($_GET['edit-id'])) {
 							<h3 class="card-title">IP Whitelist</h3>
 						</div>
 						<div class="card-body">
-<table id="dt-basic" class="table table-bordered table-hover table-sm">
+<table id="dt-basicphpconf" class="table table-bordered table-hover table-sm">
 									<thead class="<?php echo $thead; ?>">
 										<tr>
 											<th><i class="fas fa-user"></i> IP Address</th>
@@ -149,8 +149,7 @@ if (isset($_GET['edit-id'])) {
 									</thead>
 									<tbody>
 <?php
-$table = $prefix . 'ip-whitelist';
-$query = $mysqli->query("SELECT * FROM `$table`");
+$query = $mysqli->query("SELECT * FROM `psec_ip-whitelist`");
 while ($row = $query->fetch_assoc()) {
     echo '
 										<tr>
@@ -204,20 +203,6 @@ while ($row = $query->fetch_assoc()) {
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-$(document).ready(function() {
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>
 <?php
 footer();
 ?>

@@ -13,10 +13,7 @@ if(!isset($_SESSION)) {
 
 if (isset($_SESSION['sec-username'])) {
     $uname = $_SESSION['sec-username'];
-    $table = $prefix . 'settings';
-    $suser = $mysqli->query("SELECT username, password FROM `$table` WHERE username = '$uname' LIMIT 1");
-    $count = mysqli_num_rows($suser);
-    if ($count > 0) {
+    if ($uname == $settings['username']) {
         echo '<meta http-equiv="refresh" content="0; url=dashboard.php" />';
         exit;
     }
@@ -26,10 +23,6 @@ $_GET  = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
 $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
 $error = 0;
-
-$table = $prefix . 'settings';
-$query = $mysqli->query("SELECT * FROM `$table` LIMIT 1");
-$row   = mysqli_fetch_array($query);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,7 +36,7 @@ $row   = mysqli_fetch_array($query);
         <title>Project SECURITY &rsaquo; Admin Panel</title>
 
         <!-- CSS -->
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0-beta3/css/all.css">
 		<link href="assets/css/admin.min.css" rel="stylesheet">
 
         <!-- Favicon -->
@@ -51,7 +44,7 @@ $row   = mysqli_fetch_array($query);
     </head>
 
     <body class="login-page <?php
-if ($row['dark_mode'] == 1) {
+if ($settings['dark_mode'] == 1) {
     echo 'dark-mode';
 }
 ?>">
@@ -66,7 +59,7 @@ if ($row['dark_mode'] == 1) {
            <div class="card-body text-white card-primary card-outline">
 <?php
 if (isset($_POST['signin'])) {
-    $ip    = addslashes(htmlentities($_SERVER['REMOTE_ADDR']));
+    $ip = addslashes(htmlentities($_SERVER['REMOTE_ADDR']));
 	if ($ip == "::1") {
 		$ip = "127.0.0.1";
 	}
@@ -75,28 +68,21 @@ if (isset($_POST['signin'])) {
     
     $username = mysqli_real_escape_string($mysqli, $_POST['username']);
     $password = hash('sha256', $_POST['password']);
-    $table    = $prefix . "settings";
-    $check    = $mysqli->query("SELECT username, password FROM `$table` WHERE `username`='$username' AND password='$password'");
-    if (mysqli_num_rows($check) > 0) {
-        $table   = $prefix . "logins";
-        $checklh = $mysqli->query("SELECT id FROM `$table` WHERE `username`='$username' AND ip='$ip' AND date='$date' AND time='$time' AND successful='1'");
+
+    if ($username == $settings['username'] && $password == $settings['password']) {
+        
+        $checklh = $mysqli->query("SELECT id FROM `psec_logins` WHERE `username`='$username' AND ip='$ip' AND date='$date' AND time='$time' AND successful='1'");
         if (mysqli_num_rows($checklh) == 0) {
-            $log = $mysqli->query("INSERT INTO `$table` (username, ip, date, time, successful) VALUES ('$username', '$ip', '$date', '$time', '1')");
+            $log = $mysqli->query("INSERT INTO `psec_logins` (username, ip, date, time, successful) VALUES ('$username', '$ip', '$date', '$time', '1')");
         }
         
         $_SESSION['sec-username'] = $username;
         
-        /*if(isset($_POST['remember'])) {
-            $cookiehash = md5(sha1($username));
-            setcookie("sec-username", $cookiehash, time() + 3600 * 24 * 365, '/', '.project_security.com');
-        }*/
-        
         echo '<meta http-equiv="refresh" content="0;url=dashboard.php">';
     } else {
-		$table   = $prefix . "logins";
-        $checklh = $mysqli->query("SELECT id FROM `$table` WHERE `username`='$username' AND ip='$ip' AND date='$date' AND time='$time' AND successful='0'");
+        $checklh = $mysqli->query("SELECT id FROM `psec_logins` WHERE `username`='$username' AND ip='$ip' AND date='$date' AND time='$time' AND successful='0'");
         if (mysqli_num_rows($checklh) == 0) {
-            $log = $mysqli->query("INSERT INTO `$table` (username, ip, date, time, successful) VALUES ('$username', '$ip', '$date', '$time', '0')");
+            $log = $mysqli->query("INSERT INTO `psec_logins` (username, ip, date, time, successful) VALUES ('$username', '$ip', '$date', '$time', '0')");
         }
         
         echo '
@@ -142,7 +128,7 @@ if ($error == 1) {
                     <button type="submit" name="signin" class="btn btn-md btn-primary btn-block btn-flat"><i class="fas fa-sign-in-alt"></i>
 &nbsp;Sign In</button>
                     <p class="mb-1">
-                        <a href="https://github.com/MaramHarsha/Forget-password-for-secure-network" target="_blank">Forgotten password</a>
+                        <a href="https://codecanyon.net/item/project-security-website-security-antivirus-firewall/15487703/faqs/44196" target="_blank">Forgotten password</a>
                     </p>
                 </div>
             </div>

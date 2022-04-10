@@ -1,14 +1,13 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_POST['ersave'])) {
-    $table = $prefix . "settings";
+
+    $settings['error_reporting'] = $_POST['erselect'];
+    $settings['display_errors']  = $_POST['deselect'];
     
-    $ereporting = $_POST['erselect'];
-    $derrors    = $_POST['deselect'];
-    
-    $esupdate = $mysqli->query("UPDATE `$table` SET error_reporting='$ereporting', display_errors='$derrors'");
+	file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
 }
 ?>
 <div class="content-wrapper">
@@ -44,47 +43,43 @@ if (isset($_POST['ersave'])) {
 							<h3 class="card-title"><i class="fas fa-cogs"></i> Settings</h3>
 						</div>
 						<div class="card-body">
-<?php
-$table  = $prefix . 'settings';
-$result = $mysqli->query("SELECT * FROM `$table`");
-$row    = mysqli_fetch_assoc($result);
-?>
+
                             <form method="post">
 								<div class="row">
 								<div class="col-md-6">
 								<label><i class="fas fa-bug"></i> Error Reporting</label>
-                                <select class="form-control" name="erselect" style="width: 100%;">
+                                <select class="form-control" name="erselect" class="width100">
                                     <option value="1" <?php
-if ($row['error_reporting'] == 1)
+if ($settings['error_reporting'] == 1)
     echo 'selected="selected" ';
 ?>>Turned Off</option>
                                     <option value="2" <?php
-if ($row['error_reporting'] == 2)
+if ($settings['error_reporting'] == 2)
     echo 'selected="selected" ';
 ?>>Report simple running errors</option>
                                     <option value="3" <?php
-if ($row['error_reporting'] == 3)
+if ($settings['error_reporting'] == 3)
     echo 'selected="selected" ';
 ?>>Report simple running errors + notices</option>
                                     <option value="4" <?php
-if ($row['error_reporting'] == 4)
+if ($settings['error_reporting'] == 4)
     echo 'selected="selected" ';
 ?>>Report all errors except notices</option>
                                     <option value="5" <?php
-if ($row['error_reporting'] == 5)
+if ($settings['error_reporting'] == 5)
     echo 'selected="selected" ';
 ?>>Report all PHP errors</option>
                                 </select>
 								</div>
 								<div class="col-md-6">
 								<label><i class="fas fa-eye"></i> Errors Visibility</label>
-								<select class="form-control" name="deselect" style="width: 100%;">
+								<select class="form-control" name="deselect" class="width100">
                                     <option value="0" <?php
-if ($row['display_errors'] == 0)
+if ($settings['display_errors'] == 0)
     echo 'selected="selected" ';
 ?>>Hide Errors</option>
 									<option value="1" <?php
-if ($row['display_errors'] == 1)
+if ($settings['display_errors'] == 1)
     echo 'selected="selected" ';
 ?>>Display Errors</option>
                                 </select>
@@ -136,7 +131,7 @@ foreach ($lines as $key => $line) {
     $lines[$key] = compact('time', 'error');
 }
 ?>
-        <table id="dt-basic" class="table table-bordered table-hover table-sm">
+        <table id="dt-basicphpconf" class="table table-bordered table-hover table-sm">
         <thead class="<?php echo $thead; ?>">
 			<tr>
 				<th><i class="fas fa-calendar"></i> Date & Time</th>
@@ -155,8 +150,7 @@ foreach ($lines as $line) {
 ?>
             </tbody>
         </table> 
-        <?php
-
+<?php
 // Compare callback for freeform date/time strings.
 function time_field_compare($a, $b)
 {
@@ -169,13 +163,10 @@ function time_field_compare($a, $b)
 function last_lines($path, $line_count, $block_size = 512)
 {
     $lines = array();
-    
-    // we will always have a fragment of a non-complete line
-    // keep this in here till we have our next entire line.
     $leftover = '';
     
     $fh = fopen($path, 'r');
-    // go to the end of the file
+    // Go to the end of the file
     fseek($fh, 0, SEEK_END);
     
     do {
@@ -245,20 +236,6 @@ function last_lines($path, $line_count, $block_size = 512)
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-$(document).ready(function() {
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>
 <?php
 footer();
 ?>

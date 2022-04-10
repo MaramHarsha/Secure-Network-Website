@@ -1,5 +1,5 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 //Clean URL
@@ -14,7 +14,7 @@ function clean_url($site)
     return $site;
 }
 
-$site = clean_url($site_url);
+$site = clean_url($settings['site_url']);
 ?>
 <div class="content-wrapper">
 
@@ -46,17 +46,14 @@ $site = clean_url($site_url);
 //Host Info Check
 function host_info($site)
 {
-    include 'config.php';
-    
 	if (isset($_SERVER['HTTP_USER_AGENT'])) {
 		$useragent = $_SERVER['HTTP_USER_AGENT'];
 	} else {
 		$useragent = 'Mozilla/5.0';
 	}
-	
-    
+
     $ip  = getHostByName(getHostName());
-    $url = 'http://extreme-ip-lookup.com/json/' . $ip;
+    $url = 'https://ipapi.co/' . $ip . '/json/';
     $ch  = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -68,9 +65,9 @@ function host_info($site)
     curl_close($ch);
     
     $ip_data = @json_decode($ipcontent);
-    if ($ip_data && $ip_data->{'status'} == 'success') {
-        $country = $ip_data->{'country'};
-        $isp     = $ip_data->{'isp'};
+    if ($ip_data && !isset($ip_data->{'error'})) {
+        $country = $ip_data->{'country_name'};
+        $isp     = $ip_data->{'org'};
     } else {
         $country = "Unknown";
         $isp     = "Unknown";
@@ -136,7 +133,7 @@ function checkOnline($site)
 if (checkOnline($site)) {
     $vtime = $rtime['total_time'];
     $ch    = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $site_url);
+    curl_setopt($ch, CURLOPT_URL, $settings['site_url']);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
@@ -613,7 +610,7 @@ foreach ($extensions as $extension) {
                        <div class="col-md-3">
 							<div class="card">
 								<div class="card-body text-center">
-									<p class="text-uppercase mar-btm text-sm" style="font-size: 20px">Domain IP</p>
+									<p class="text-uppercase mar-btm text-sm" class="font20">Domain IP</p>
 									<i class="fas fa-user fa-3x"></i>
 									<hr />
 									<p class="h4 text-thin"><?php
@@ -626,7 +623,7 @@ echo $serverip;
                        <div class="col-md-3">
 							<div class="card">
 								<div class="card-body text-center">
-									<p class="text-uppercase mar-btm text-sm" style="font-size: 20px">Country</p>
+									<p class="text-uppercase mar-btm text-sm" class="font20">Country</p>
 									<i class="fas fa-globe fa-3x"></i>
 									<hr />
 									<p class="h4 text-thin"><?php
@@ -639,7 +636,7 @@ echo $host_country;
                        <div class="col-md-3">
 							<div class="card">
 								<div class="card-body text-center">
-									<p class="text-uppercase mar-btm text-sm" style="font-size: 20px">Server Software</p>
+									<p class="text-uppercase mar-btm text-sm" class="font20">Server Software</p>
 									<i class="fas fa-database fa-3x"></i>
 									<hr />
 									<p class="h4 text-thin">
@@ -657,7 +654,7 @@ echo $soft;
                        <div class="col-md-3">
 							<div class="card">
 								<div class="card-body text-center">
-									<p class="text-uppercase mar-btm text-sm" style="font-size: 20px">ISP</p>
+									<p class="text-uppercase mar-btm text-sm" class="font20">ISP</p>
 									<i class="fas fa-tasks fa-3x"></i>
 									<hr />
 									<p class="h4 text-thin"><?php
@@ -672,7 +669,7 @@ echo $host_isp;
                        <div class="col-md-3">
 							<div class="card">
 								<div class="card-body text-center">
-									<p class="text-uppercase mar-btm text-sm" style="font-size: 20px">Server OS</p>
+									<p class="text-uppercase mar-btm text-sm" class="font20">Server OS</p>
 									<i class="fas fa-desktop fa-3x"></i>
 									<hr />
 									<p class="h4 text-thin">
@@ -717,7 +714,7 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
                        <div class="col-md-3">
 							<div class="card">
 								<div class="card-body text-center">
-									<p class="text-uppercase mar-btm text-sm" style="font-size: 20px">PHP Version</p>
+									<p class="text-uppercase mar-btm text-sm" class="font20">PHP Version</p>
 									<i class="fas fa-file-code fa-3x"></i>
 									<hr />
 									<p class="h4 text-thin"><?php
@@ -730,7 +727,7 @@ echo phpversion();
                        <div class="col-md-3">
 							<div class="card">
 								<div class="card-body text-center">
-									<p class="text-uppercase mar-btm text-sm" style="font-size: 20px">MySQL Version</p>
+									<p class="text-uppercase mar-btm text-sm" class="font20">MySQL Version</p>
 									<i class="fas fa-list-alt fa-3x"></i>
 									<hr />
 									<p class="h4 text-thin"><?php
@@ -743,7 +740,7 @@ echo mysqli_get_server_info($mysqli);
                        <div class="col-md-3">
 							<div class="card">
 								<div class="card-body text-center">
-									<p class="text-uppercase mar-btm text-sm" style="font-size: 20px">Server Port</p>
+									<p class="text-uppercase mar-btm text-sm" class="font20">Server Port</p>
 									<i class="fas fa-plug fa-3x"></i>
 									<hr />
 									<p class="h4 text-thin"><?php
@@ -758,7 +755,7 @@ echo $_SERVER['SERVER_PORT'];
                        <div class="col-md-3">
 							<div class="card">
 								<div class="card-body text-center">
-									<p class="text-uppercase mar-btm text-sm" style="font-size: 20px">OpenSSL Version</p>
+									<p class="text-uppercase mar-btm text-sm" class="font20">OpenSSL Version</p>
 									<i class="fas fa-lock fa-3x"></i>
 									<hr />
 									<p class="h4 text-thin">
@@ -776,7 +773,7 @@ if (!extension_loaded('openssl')) {
                        <div class="col-md-3">
 							<div class="card">
 								<div class="card-body text-center">
-									<p class="text-uppercase mar-btm text-sm" style="font-size: 20px">cURL Extension</p>
+									<p class="text-uppercase mar-btm text-sm" class="font20">cURL Extension</p>
 									<i class="fas fa-link fa-3x"></i>
 									<hr />
 									<p class="h4 text-thin">
@@ -795,7 +792,7 @@ if (function_exists('curl_version')) {
                        <div class="col-md-3">
 							<div class="card">
 								<div class="card-body text-center">
-									<p class="text-uppercase mar-btm text-sm" style="font-size: 20px">HTTP Protocol</p>
+									<p class="text-uppercase mar-btm text-sm" class="font20">HTTP Protocol</p>
 									<i class="fas fa-hdd fa-3x"></i>
 									<hr />
 									<p class="h4 text-thin"><?php
@@ -808,7 +805,7 @@ echo $_SERVER['SERVER_PROTOCOL'];
                        <div class="col-md-3">
 							<div class="card">
 								<div class="card-body text-center">
-									<p class="text-uppercase mar-btm text-sm" style="font-size: 20px">Gateway Interface</p>
+									<p class="text-uppercase mar-btm text-sm" class="font20">Gateway Interface</p>
 									<i class="fas fa-sitemap fa-3x"></i>
 									<hr />
 									<p class="h4 text-thin"><?php

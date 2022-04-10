@@ -1,16 +1,15 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_GET['delete-id'])) {
     $id    = (int) $_GET["delete-id"];
-    $table = $prefix . 'logs';
-    $query = $mysqli->query("DELETE FROM `$table` WHERE id='$id'");
+
+    $query = $mysqli->query("DELETE FROM `psec_logs` WHERE id='$id'");
 }
 
 if (isset($_GET['delete-all'])) {
-    $table = $prefix . 'logs';
-    $query = $mysqli->query("DELETE FROM `$table` WHERE type='Bad Bot' or type='Fake Bot' or type='Missing User-Agent header' or type='Missing header Accept' or type='Invalid IP Address header'");
+    $query = $mysqli->query("DELETE FROM `psec_logs` WHERE type='Bad Bot' or type='Fake Bot' or type='Missing User-Agent header' or type='Missing header Accept' or type='Invalid IP Address header'");
 }
 ?>
 <div class="content-wrapper">
@@ -49,7 +48,7 @@ if (isset($_GET['delete-all'])) {
 						</div>
 						<div class="card-body">
 
-<table id="dt-basic" class="table table-bordered table-hover table-sm">
+<table id="dt-basicloghist" class="table table-bordered table-hover table-sm">
 									<thead class="<?php echo $thead; ?>">
 										<tr>
 						                  <th>IP Address</th>
@@ -64,8 +63,7 @@ if (isset($_GET['delete-all'])) {
 									</thead>
 									<tbody>
 <?php
-$table = $prefix . 'logs';
-$sql   = $mysqli->query("SELECT id, ip, date, time, browser, browser_code, os, os_code, country, country_code, type, useragent FROM `$table` WHERE type='Bad Bot' or type='Fake Bot' or type='Missing User-Agent header' or type='Missing header Accept' or type='Invalid IP Address header' ORDER by id DESC");
+$sql   = $mysqli->query("SELECT id, ip, date, time, browser, browser_code, os, os_code, country, country_code, type, useragent FROM `psec_logs` WHERE type='Bad Bot' or type='Fake Bot' or type='Missing User-Agent header' or type='Missing header Accept' or type='Invalid IP Address header' ORDER by id DESC");
 while ($row = mysqli_fetch_assoc($sql)) {
     echo '
 										<tr>
@@ -101,22 +99,7 @@ while ($row = mysqli_fetch_assoc($sql)) {
 			</div>
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
-</div>
-<script>
-$(document).ready(function() {
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-        "order": [[ 2, "desc" ]],
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>    
+</div>   
 <?php
 footer();
 ?>

@@ -1,6 +1,34 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
+
+// Delete outdated cache files
+$now   = time();
+
+$files = glob("modules/cache/ip-details" . "/*");
+foreach ($files as $file) {
+    if (is_file($file)) {
+		if (($now - filemtime($file)) >= (1 * 24 * 60 * 60)) { // 1 day
+			unlink($file);
+		}
+    }
+}
+$files = glob("modules/cache/live-traffic" . "/*");
+foreach ($files as $file) {
+    if (is_file($file)) {
+		if (($now - filemtime($file)) >= (1 * 24 * 60 * 60)) { // 1 day
+			unlink($file);
+		}
+    }
+}
+$files = glob("modules/cache/proxy" . "/*");
+foreach ($files as $file) {
+    if (is_file($file)) {
+		if (($now - filemtime($file)) >= (1 * 24 * 60 * 60)) { // 1 day
+			unlink($file);
+		}
+    }
+}
 ?>
 <div class="content-wrapper">
 
@@ -31,14 +59,14 @@ head();
 <h4 class="card-title">Today's Stats</h4><br />
 <?php
 $date   = date('d F Y');
-$table  = $prefix . 'logs';
-$query  = $mysqli->query("SELECT * FROM `$table` WHERE `date`='$date' AND `type`='SQLi'");
+
+$query  = $mysqli->query("SELECT * FROM `psec_logs` WHERE `date`='$date' AND `type`='SQLi'");
 $count  = mysqli_num_rows($query);
-$query2 = $mysqli->query("SELECT * FROM `$table` WHERE `date`='$date' AND `type`='Bad Bot' or `type`='Fake Bot' or type='Missing User-Agent header' or type='Missing header Accept' or type='Invalid IP Address header'");
+$query2 = $mysqli->query("SELECT * FROM `psec_logs` WHERE `date`='$date' AND `type`='Bad Bot' or `type`='Fake Bot' or type='Missing User-Agent header' or type='Missing header Accept' or type='Invalid IP Address header'");
 $count2 = mysqli_num_rows($query2);
-$query3 = $mysqli->query("SELECT * FROM `$table` WHERE `date`='$date' AND `type`='Proxy'");
+$query3 = $mysqli->query("SELECT * FROM `psec_logs` WHERE `date`='$date' AND `type`='Proxy'");
 $count3 = mysqli_num_rows($query3);
-$query4 = $mysqli->query("SELECT * FROM `$table` WHERE `date`='$date' AND `type`='Spammer'");
+$query4 = $mysqli->query("SELECT * FROM `psec_logs` WHERE `date`='$date' AND `type`='Spammer'");
 $count4 = mysqli_num_rows($query4);
 ?>
                 <div class="row">
@@ -116,14 +144,13 @@ echo $count4;
 					
 					    </div>
 <?php
-$table   = $prefix . 'logs';
-$querym  = $mysqli->query("SELECT * FROM `$table` WHERE `type`='SQLi'");
+$querym  = $mysqli->query("SELECT * FROM `psec_logs` WHERE `type`='SQLi'");
 $countm  = mysqli_num_rows($querym);
-$querym2 = $mysqli->query("SELECT * FROM `$table` WHERE `type`='Bad Bot' or `type`='Fake Bot' or type='Missing User-Agent header' or type='Missing header Accept' or type='Invalid IP Address header'");
+$querym2 = $mysqli->query("SELECT * FROM `psec_logs` WHERE `type`='Bad Bot' or `type`='Fake Bot' or type='Missing User-Agent header' or type='Missing header Accept' or type='Invalid IP Address header'");
 $countm2 = mysqli_num_rows($querym2);
-$querym3 = $mysqli->query("SELECT * FROM `$table` WHERE `type`='Proxy'");
+$querym3 = $mysqli->query("SELECT * FROM `psec_logs` WHERE `type`='Proxy'");
 $countm3 = mysqli_num_rows($querym3);
-$querym4 = $mysqli->query("SELECT * FROM `$table` WHERE `type`='Spammer'");
+$querym4 = $mysqli->query("SELECT * FROM `psec_logs` WHERE `type`='Spammer'");
 $countm4 = mysqli_num_rows($querym4);
 ?>
                         <div class="col-lg-5">
@@ -201,10 +228,7 @@ echo $countm4;
 						    <center>
 							<strong><i class="fas fa-code"></i> SQLi</strong><br />Protection<hr />
 <?php
-$table = $prefix . 'sqli-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-if ($row['protection'] == 1) {
+if ($settings['sqli_protection'] == 1) {
     echo '
 					        <h4><span class="badge badge-success"><i class="fas fa-check"></i> ON</span></h4>
 ';
@@ -222,10 +246,7 @@ if ($row['protection'] == 1) {
 						    <center>
 							<strong><i class="fas fa-robot"></i> Bad Bots</strong><br />Protection<hr />
 <?php
-$table = $prefix . 'badbot-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-if ($row['protection'] == 1 OR $row['protection2'] == 1 OR $row['protection3'] == 1) {
+if ($settings['badbot_protection'] == 1 OR $settings['badbot_protection2'] == 1 OR $settings['badbot_protection3'] == 1) {
     echo '
 					        <h4><span class="badge badge-success"><i class="fas fa-check"></i> ON</span></h4>
 ';
@@ -243,10 +264,7 @@ if ($row['protection'] == 1 OR $row['protection2'] == 1 OR $row['protection3'] =
 						    <center>
 							<strong><i class="fas fa-globe"></i> Proxy</strong><br />Protection<br /><hr />
 <?php
-$table = $prefix . 'proxy-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-if ($row['protection'] == 1 OR $row['protection2'] == 1) {
+if ($settings['proxy_protection'] == 1 OR $settings['proxy_protection2'] == 1) {
     echo '
 					        <h4><span class="badge badge-success"><i class="fas fa-check"></i> ON</span></h4>
 ';
@@ -264,12 +282,8 @@ if ($row['protection'] == 1 OR $row['protection2'] == 1) {
 						    <center>
 							<strong><i class="fas fa-keyboard"></i> Spam</strong><br />Protection<br /><hr />
 <?php
-$table    = $prefix . 'spam-settings';
-$query    = $mysqli->query("SELECT * FROM `$table`");
-$row      = $query->fetch_assoc();
-$tablesp2 = $prefix . 'dnsbl-databases';
-$querysp2 = $mysqli->query("SELECT * FROM `$tablesp2`");
-if ($row['protection'] == 1 && mysqli_num_rows($querysp2) > 0) {
+$querysp = $mysqli->query("SELECT * FROM `psec_dnsbl-databases`");
+if ($settings['spam_protection'] == 1 && mysqli_num_rows($querysp) > 0) {
     echo '
 					        <h4><span class="badge badge-success"><i class="fas fa-check"></i> ON</span></h4>
 ';
@@ -297,10 +311,7 @@ if ($row['protection'] == 1 && mysqli_num_rows($querysp2) > 0) {
 						    <center>
 							<strong><i class="fas fa-code"></i> SQLi</strong><br />Logging<hr />
 <?php
-$table = $prefix . 'sqli-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-if ($row['logging'] == 1) {
+if ($settings['sqli_logging'] == 1) {
     echo '
 					        <h4><span class="badge badge-success"><i class="fas fa-check"></i> ON</span></h4>
 ';
@@ -318,10 +329,7 @@ if ($row['logging'] == 1) {
 						    <center>
 							<strong><i class="fas fa-robot"></i> Bad Bots</strong><br />Logging<hr />
 <?php
-$table = $prefix . 'badbot-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-if ($row['logging'] == 1) {
+if ($settings['badbot_logging'] == 1) {
     echo '
 					        <h4><span class="badge badge-success"><i class="fas fa-check"></i> ON</span></h4>
 ';
@@ -339,10 +347,7 @@ if ($row['logging'] == 1) {
 						    <center>
 							<strong><i class="fas fa-globe"></i> Proxy</strong><br />Logging <br /><hr />
 <?php
-$table = $prefix . 'proxy-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-if ($row['logging'] == 1) {
+if ($settings['proxy_logging'] == 1) {
     echo '
 					        <h4><span class="badge badge-success"><i class="fas fa-check"></i> ON</span></h4>
 ';
@@ -360,10 +365,7 @@ if ($row['logging'] == 1) {
 						    <center>
 							<strong><i class="fas fa-keyboard"></i> Spam</strong><br />Logging<br /><hr />
 <?php
-$table = $prefix . 'spam-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-if ($row['logging'] == 1) {
+if ($settings['spam_logging'] == 1) {
     echo '
 					        <h4><span class="badge badge-success"><i class="fas fa-check"></i> ON</span></h4>
 ';
@@ -377,106 +379,12 @@ if ($row['logging'] == 1) {
 						</div>
 					</div>
 					</div>
-					
-					<div class="row">
-					<div class="col-md-4">
-                        <div class="card card-body bg-light">
-						    <center>
-							<h5><i class="fas fa-ban"></i> &nbsp;AutoBan Settings</h5>
-                            </center>
-						</div>
-					</div>
-					<div class="col-md-2">
-                        <div class="card card-body bg-light">
-						    <center>
-							<strong><i class="fas fa-code"></i> SQLi</strong><br />AutoBan<hr />
-<?php
-$table = $prefix . 'sqli-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-if ($row['autoban'] == 1) {
-    echo '
-					        <h4><span class="badge badge-success"><i class="fas fa-check"></i> ON</span></h4>
-';
-} else {
-    echo '
-                            <h4><span class="badge badge-danger"><i class="fas fa-times"></i> OFF</span></h4>
-';
-}
-?>
-                            </center>							
-						</div>
-					</div>
-                    <div class="col-md-2">
-                        <div class="card card-body bg-light">
-						    <center>
-							<strong><i class="fas fa-robot"></i> Bad Bots</strong><br />AutoBan<hr />
-<?php
-$table = $prefix . 'badbot-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-if ($row['autoban'] == 1) {
-    echo '
-					        <h4><span class="badge badge-success"><i class="fas fa-check"></i> ON</span></h4>
-';
-} else {
-    echo '
-                            <h4><span class="badge badge-danger"><i class="fas fa-times"></i> OFF</span></h4>
-';
-}
-?>
-                            </center>
-						</div>
-					</div>
-					<div class="col-md-2">
-                        <div class="card card-body bg-light">
-						    <center>
-							<strong><i class="fas fa-globe"></i> Proxy</strong><br />AutoBan<br /><hr />
-<?php
-$table = $prefix . 'proxy-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-if ($row['autoban'] == 1) {
-    echo '
-					        <h4><span class="badge badge-success"><i class="fas fa-check"></i> ON</span></h4>
-';
-} else {
-    echo '
-                            <h4><span class="badge badge-danger"><i class="fas fa-times"></i> OFF</span></h4>
-';
-}
-?>
-                            </center>
-						</div>
-					</div>
-					<div class="col-md-2">
-                        <div class="card card-body bg-light">
-						    <center>
-							<strong><i class="fas fa-keyboard"></i> Spam</strong><br />AutoBan<br /><hr />
-<?php
-$table = $prefix . 'spam-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-if ($row['autoban'] == 1) {
-    echo '
-					        <h4><span class="badge badge-success"><i class="fas fa-check"></i> ON</span></h4>
-';
-} else {
-    echo '
-                            <h4><span class="badge badge-danger"><i class="fas fa-times"></i> OFF</span></h4>
-';
-}
-?>
-                            </center>
-						</div>
-					</div>
-					</div>   
 						</div>
 				   </div>
 				   
 				   <div class="row">
 <?php
-$url = 'http://extreme-ip-lookup.com/json/127.0.0.1';
+$url = 'https://ipapi.co/8.8.8.8/json/';
 $ch  = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -488,7 +396,7 @@ $ipcontent = curl_exec($ch);
 curl_close($ch);
 
 $ip_data = @json_decode($ipcontent);
-if ($ip_data && $ip_data->{'status'} == 'success') {
+if ($ip_data && !isset($ip_data->{'error'})) {
     $gstatus = '<font color="green">Online</font>';
 } else {
     $gstatus = '<font color="red">Offline</font>';
@@ -506,18 +414,14 @@ echo $gstatus;
           			        </div>
 						</div>
 <?php
-$tablepd = $prefix . 'proxy-settings';
-$querypd = $mysqli->query("SELECT * FROM `$tablepd`");
-$rowpd   = mysqli_fetch_array($querypd);
-
 $proxy_check = 0;
 
-if ($rowpd['protection'] > 0 && $rowpd['protection'] != 4) {
-    $apik = 'api' . $rowpd['protection'];
-    $key  = $rowpd[$apik];
+if ($settings['proxy_protection'] > 0 && $settings['proxy_protection'] != 4) {
+    $apik = 'api' . $settings['protection'];
+    $key  = $settings['proxy_' . $apik];
 }
 
-if ($rowpd['protection'] == 1) {
+if ($settings['proxy_protection'] == 1) {
     //Invalid API Key ==> Offline
     $ch  = curl_init();
     $url = "http://v2.api.iphub.info";
@@ -534,7 +438,7 @@ if ($rowpd['protection'] == 1) {
         $proxy_check = 1;
     }
     
-} else if ($rowpd['protection'] == 2) {
+} else if ($settings['proxy_protection'] == 2) {
     
     $ch = curl_init('http://proxycheck.io/v2/8.8.8.8');
     $curl_options = array(
@@ -550,12 +454,12 @@ if ($rowpd['protection'] == 1) {
         $proxy_check = 1;
     }
     
-} else if ($rowpd['protection'] == 3) {
+} else if ($settings['proxy_protection'] == 3) {
     //Invalid API Key ==> Offline
     $headers = [
 		'X-Key: '.$key.'',
     ];
-    $ch = curl_init("http://www.iphunter.info:8082/v1/ip/8.8.8.8");
+    $ch = curl_init("https://www.iphunter.info:8082/v1/ip/8.8.8.8");
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -567,7 +471,7 @@ if ($rowpd['protection'] == 1) {
         $proxy_check = 1;
     }
 
-} else if ($rowpd['protection'] == 4) {
+} else if ($settings['proxy_protection'] == 4) {
 	$ch  = curl_init();
 	curl_setopt($ch, CURLOPT_URL, 'http://blackbox.ipinfo.app/lookup/8.8.8.8');
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -617,13 +521,12 @@ echo $pstatus;
              			        </div>
             			        <div class="card-body">
 <?php
-$table = $prefix . 'logs';
-$query = $mysqli->query("SELECT * FROM `$table` ORDER BY id DESC LIMIT 2");
+$query = $mysqli->query("SELECT * FROM `psec_logs` ORDER BY id DESC LIMIT 2");
 $count = mysqli_num_rows($query);
 if ($count > 0) {
     while ($row = $query->fetch_assoc()) {
         echo '
-							<h4 class="navbar-dark" style="color: white; font-size: 15px; padding: 7px 10px; margin-top: 0;"><i class="fas fa-user pull-left"></i> ' . $row['ip'] . '</h4>
+							<p class="navbar-dark text-white text-center"><i class="fas fa-user pull-left"></i> ' . $row['ip'] . '</p>
 
 							<div class="media">
                             <div class="media-body">
@@ -631,15 +534,15 @@ if ($count > 0) {
                                     <p><i class="fas fa-file-alt"></i> Threat Type:
 ';
         if ($row['type'] == 'SQLi') {
-            echo '<button class="btn btn-sm btn-primary btn-flat"><i class="fas fa-code"></i> <b>' . $row['type'] . '</b></button>';
+            echo '<button class="btn btn-xs btn-primary btn-flat"><i class="fas fa-code"></i> <b>' . $row['type'] . '</b></button>';
         } elseif ($row['type'] == 'Bad Bot' || $row['type'] == 'Fake Bot' || $row['type'] == 'Missing User-Agent header' || $row['type'] == 'Missing header Accept' || $row['type'] == 'Invalid IP Address header') {
-            echo '<button class="btn btn-sm btn-danger btn-flat"><i class="fas fa-robot"></i> <b>' . $row['type'] . '</b></button>';
+            echo '<button class="btn btn-xs btn-danger btn-flat"><i class="fas fa-robot"></i> <b>' . $row['type'] . '</b></button>';
         } elseif ($row['type'] == 'Proxy') {
-            echo '<button class="btn btn-sm btn-success btn-flat"><i class="fas fa-globe"></i> <b>' . $row['type'] . '</b></button>';
+            echo '<button class="btn btn-xs btn-success btn-flat"><i class="fas fa-globe"></i> <b>' . $row['type'] . '</b></button>';
         } elseif ($row['type'] == 'Spammer') {
-            echo '<button class="btn btn-sm btn-warning btn-flat"><i class="fas fa-keyboard"></i> <b>' . $row['type'] . '</b></button>';
+            echo '<button class="btn btn-xs btn-warning btn-flat"><i class="fas fa-keyboard"></i> <b>' . $row['type'] . '</b></button>';
         } else {
-            echo '<button class="btn btn-sm btn-success btn-flat"><i class="fas fa-user-secret"></i> <b>Other</b></button>';
+            echo '<button class="btn btn-xs btn-success btn-flat"><i class="fas fa-user-secret"></i> <b>Other</b></button>';
         }
         echo '
 		                    </p>
@@ -674,21 +577,20 @@ if ($count > 0) {
              			        </div>
             			        <div class="card-body">
 <?php
-$table = $prefix . 'bans';
-$query = $mysqli->query("SELECT * FROM `$table` ORDER BY id DESC LIMIT 2");
+$query = $mysqli->query("SELECT * FROM `psec_bans` ORDER BY id DESC LIMIT 2");
 $count = mysqli_num_rows($query);
 if ($count > 0) {
     while ($row = $query->fetch_assoc()) {
         echo '	
-							<h4 class="navbar-dark" style="color: white; font-size: 15px; padding: 7px 10px; margin-top: 0;"><i class="fas fa-user pull-left"></i> ' . $row['ip'] . '</h4>
-													
+							<p class="navbar-dark text-white text-center"><i class="fas fa-user pull-left"></i> ' . $row['ip'] . '</p>
+								
 							<div class="media">
                             <div class="media-body">
 									<p><i class="fas fa-file-alt"></i> ' . $row['reason'] . '</p>
 									<p><i class="fas fa-calendar"></i> ' . $row['date'] . ' at ' . $row['time'] . '</p>
 
-                                    <p style="margin-bottom: 0">
-                                        <button class="btn btn-sm btn-flat btn-danger"><i class="fas fa-magic"></i> Autobanned: <b>';
+                                    <p class="marg_bottom">
+                                        <button class="btn btn-xs btn-flat btn-danger"><i class="fas fa-magic"></i> Autobanned: <b>';
         if ($row['autoban'] == 1) {
             echo 'Yes';
         } else {
@@ -729,9 +631,8 @@ if ($count > 0) {
 				</thead>
 				<tbody>
 <?php
-$table = $prefix . 'logs';
-@$query = $mysqli->query("SELECT id FROM `$table`");
-@$count = mysqli_num_rows($query);
+$query = $mysqli->query("SELECT id FROM `psec_logs`");
+$count = mysqli_num_rows($query);
 ?>
                     <tr>
                       <td>Total</td>
@@ -740,9 +641,8 @@ echo $count;
 ?></td>
                     </tr>
 <?php
-$table  = $prefix . 'logs';
 $date2  = date("d F Y");
-$query2 = $mysqli->query("SELECT id FROM `$table` WHERE `date`='$date2'");
+$query2 = $mysqli->query("SELECT id FROM `psec_logs` WHERE `date`='$date2'");
 $count2 = mysqli_num_rows($query2);
 ?>
                     <tr>
@@ -752,9 +652,8 @@ echo $count2;
 ?></td>
                     </tr>
 <?php
-$table  = $prefix . 'logs';
 $date3  = date("F Y");
-$query3 = $mysqli->query("SELECT id FROM `$table` WHERE `date` LIKE '% $date3'");
+$query3 = $mysqli->query("SELECT id FROM `psec_logs` WHERE `date` LIKE '% $date3'");
 $count3 = mysqli_num_rows($query3);
 ?>
 					<tr>
@@ -764,9 +663,8 @@ echo $count3;
 ?></td>
                     </tr>
 <?php
-$table  = $prefix . 'logs';
 $date4  = date("Y");
-$query4 = $mysqli->query("SELECT id FROM `$table` WHERE `date` LIKE '% $date4'");
+$query4 = $mysqli->query("SELECT id FROM `psec_logs` WHERE `date` LIKE '% $date4'");
 $count4 = mysqli_num_rows($query4);
 ?>
 					<tr>
@@ -784,8 +682,7 @@ echo $count4;
 				</thead>
 				<tbody>
 <?php
-$table  = $prefix . 'bans';
-$query5 = $mysqli->query("SELECT id FROM `$table`");
+$query5 = $mysqli->query("SELECT id FROM `psec_bans`");
 $count5 = mysqli_num_rows($query5);
 ?>
                     <tr>
@@ -795,9 +692,8 @@ echo $count5;
 ?></td>
                     </tr>
 <?php
-$table  = $prefix . 'bans';
 $date6  = date("d F Y");
-$query6 = $mysqli->query("SELECT id FROM `$table` WHERE `date`='$date6'");
+$query6 = $mysqli->query("SELECT id FROM `psec_bans` WHERE `date`='$date6'");
 $count6 = mysqli_num_rows($query6);
 ?>
                     <tr>
@@ -807,9 +703,8 @@ echo $count6;
 ?></td>
                     </tr>
 <?php
-$table  = $prefix . 'bans';
 $date7  = date("F Y");
-$query7 = $mysqli->query("SELECT id FROM `$table` WHERE `date` LIKE '% $date7'");
+$query7 = $mysqli->query("SELECT id FROM `psec_bans` WHERE `date` LIKE '% $date7'");
 $count7 = mysqli_num_rows($query7);
 ?>
 					<tr>
@@ -819,9 +714,8 @@ echo $count7;
 ?></td>
                     </tr>
 <?php
-$table  = $prefix . 'bans';
 $date8  = date("Y");
-$query8 = $mysqli->query("SELECT id FROM `$table` WHERE `date` LIKE '% $date8'");
+$query8 = $mysqli->query("SELECT id FROM `psec_bans` WHERE `date` LIKE '% $date8'");
 $count8 = mysqli_num_rows($query8);
 ?>
 					<tr>
@@ -844,7 +738,7 @@ echo $count8;
 						<div class="card-body">
 					        <div class="col-md-12">
 
-<table id="dt-basic" class="table table-bordered table-hover table-sm">
+								<table id="dt-basic" class="table table-bordered table-hover table-sm">
 									<thead class="<?php echo $thead; ?>">
 										<tr>
 								          <th><i class="fas fa-globe"></i> Country</th>
@@ -853,7 +747,6 @@ echo $count8;
 									</thead>
 									<tbody>
 <?php
-$table     = $prefix . 'logs';
 $countries = array(
     "Afghanistan",
     "Albania",
@@ -1051,7 +944,7 @@ $countries = array(
 );
 
 foreach ($countries as $country) {
-    $log_result = $mysqli->query("SELECT * FROM `$table` WHERE `country` LIKE '%$country%'");
+    $log_result = $mysqli->query("SELECT * FROM `psec_logs` WHERE `country` LIKE '%$country%'");
     $log_rows   = mysqli_num_rows($log_result);
     $lgrow      = mysqli_fetch_assoc($log_result);
     
@@ -1079,141 +972,6 @@ foreach ($countries as $country) {
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-var barChartData = {
-			labels: [
-<?php
-$i = 1;
-while ($i <= 12) {
-    $date = date('F', mktime(0, 0, 0, $i, 1));
-    echo "'$date'";
-    if ($i != 12) {
-        echo ',';
-    }
-    $i++;
-}
-?>
-			],
-			datasets: [{
-				label: 'SQLi',
-				backgroundColor: '#007bff',
-				stack: '1',
-				data: [
-<?php
-$table = $prefix . 'logs';
-$i     = 1;
-while ($i <= 12) {
-    $date   = date('F Y', mktime(0, 0, 0, $i, 1));
-    $tquery = $mysqli->query("SELECT * FROM `$table` WHERE `date` LIKE '%$date' AND `type`='SQLi'");
-    $tcount = mysqli_num_rows($tquery);
-    echo "'$tcount'";
-    if ($i != 12) {
-        echo ',';
-    }
-    $i++;
-}
-?>
-				]
-			}, {
-				label: 'Bad Bot',
-				backgroundColor: '#dc3545',
-				stack: '2',
-				data: [
-<?php
-$table = $prefix . 'logs';
-$i     = 1;
-while ($i <= 12) {
-    $date   = date('F Y', mktime(0, 0, 0, $i, 1));
-    $tquery = $mysqli->query("SELECT * FROM `$table` WHERE `date` LIKE '%$date' AND (`type`='Bad Bot' or `type`='Fake Bot' or type='Missing User-Agent header' or type='Missing header Accept' or type='Invalid IP Address header')");
-    $tcount = mysqli_num_rows($tquery);
-    echo "'$tcount'";
-    if ($i != 12) {
-        echo ',';
-    }
-    $i++;
-}
-?>
-				]
-			}, {
-				label: 'Proxies',
-				backgroundColor: '#28a745',
-				stack: '3',
-				data: [
-<?php
-$table = $prefix . 'logs';
-$i     = 1;
-while ($i <= 12) {
-    $date   = date('F Y', mktime(0, 0, 0, $i, 1));
-    $tquery = $mysqli->query("SELECT * FROM `$table` WHERE `date` LIKE '%$date' AND `type`='Proxy'");
-    $tcount = mysqli_num_rows($tquery);
-    echo "'$tcount'";
-    if ($i != 12) {
-        echo ',';
-    }
-    $i++;
-}
-?>
-				]
-			}, {
-				label: 'Spammers',
-				backgroundColor: '#ffc107',
-				stack: '4',
-				data: [
-<?php
-$table = $prefix . 'logs';
-$i     = 1;
-while ($i <= 12) {
-    $date   = date('F Y', mktime(0, 0, 0, $i, 1));
-    $tquery = $mysqli->query("SELECT * FROM `$table` WHERE `date` LIKE '%$date' AND `type`='Spammer'");
-    $tcount = mysqli_num_rows($tquery);
-    echo "'$tcount'";
-    if ($i != 12) {
-        echo ',';
-    }
-    $i++;
-}
-?>
-				]
-			}]
-
-		};
-		window.onload = function() {
-			var ctx = document.getElementById('log-stats').getContext('2d');
-			window.myBar = new Chart(ctx, {
-				type: 'bar',
-				data: barChartData,
-				options: {
-					tooltips: {
-						mode: 'index',
-						intersect: false
-					},
-					responsive: true,
-					scales: {
-						xAxes: [{
-							stacked: true,
-						}],
-						yAxes: [{
-							stacked: true
-						}]
-					}
-				}
-			});
-		};
-		
-$(document).ready(function() {
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-        "order": [[ 1, "desc" ]],
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>
 <?php
 footer();
 ?>

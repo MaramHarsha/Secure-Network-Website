@@ -1,4 +1,7 @@
 <?php
+// Project SECURITY version
+$psec_version = "4.8";
+
 $configfile = 'config.php';
 if (!file_exists($configfile)) {
     echo '<meta http-equiv="refresh" content="0; url=install" />';
@@ -11,13 +14,9 @@ if(!isset($_SESSION)) {
     session_start();
 }
 
-//$user_cookie = $_COOKIE['sec-username']; 
 if (isset($_SESSION['sec-username'])) {
     $uname = $_SESSION['sec-username'];
-    $table = $prefix . 'settings';
-    $suser = $mysqli->query("SELECT username, password FROM `$table` WHERE username='$uname' LIMIT 1");
-    $count = $suser->num_rows;
-    if ($count < 0) {
+    if ($uname != $settings['username']) {
         echo '<meta http-equiv="refresh" content="0; url=index.php" />';
         exit;
     }
@@ -31,11 +30,7 @@ if (basename($_SERVER['SCRIPT_NAME']) != 'warning-pages.php') {
     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 }
 
-$table = $prefix . 'settings';
-$query = $mysqli->query("SELECT * FROM `$table` LIMIT 1");
-$row   = mysqli_fetch_array($query);
-
-if($row['dark_mode']){
+if($settings['dark_mode']){
     $thead = 'thead-dark';
 } else {
     $thead = 'thead-light';
@@ -44,8 +39,8 @@ if($row['dark_mode']){
 function get_banned($ip)
 {
     include 'config.php';
-    $table = $prefix . 'bans';
-    $query = $mysqli->query("SELECT * FROM `$table` WHERE ip='$ip' LIMIT 1");
+
+    $query = $mysqli->query("SELECT * FROM `psec_bans` WHERE ip='$ip' LIMIT 1");
     $count = mysqli_num_rows($query);
     if ($count > 0) {
         return 1;
@@ -57,8 +52,8 @@ function get_banned($ip)
 function get_bannedid($ip)
 {
     include 'config.php';
-    $table = $prefix . 'bans';
-    $query = $mysqli->query("SELECT * FROM `$table` WHERE ip='$ip' LIMIT 1");
+
+    $query = $mysqli->query("SELECT * FROM `psec_bans` WHERE ip='$ip' LIMIT 1");
     $row   = mysqli_fetch_array($query);
     return $row['id'];
 }
@@ -66,13 +61,9 @@ function get_bannedid($ip)
 function head()
 {
     include 'config.php';
-    
-    $table = $prefix . 'settings';
-    $query = $mysqli->query("SELECT * FROM `$table` LIMIT 1");
-    $row   = mysqli_fetch_array($query);
 ?>
 <!DOCTYPE html>
-<html style="height: auto;">
+<html class="height_auto">
 
 <head>
     <meta charset="utf-8">
@@ -84,53 +75,49 @@ function head()
     <link rel="shortcut icon" href="assets/img/favicon.png">
     <title>Project SECURITY &rsaquo; Admin Panel</title>
 
-
     <!--STYLESHEET-->
     <!--=================================================-->
 	
-    <!--Bootstrap Stylesheet-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <!--Bootstrap 4-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
 	
     <!--Font Awesome-->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0-beta3/css/all.css">
 	
 	<!--Stylesheet-->
     <link href="assets/css/admin.min.css" rel="stylesheet">
+	<link href="assets/css/psec.css" rel="stylesheet">
     
     <!--OverlayScrollbars-->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/1.13.0/css/OverlayScrollbars.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/1.13.1/css/OverlayScrollbars.min.css" rel="stylesheet">
 	
     <!--Switchery-->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.css" rel="stylesheet">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.js"></script>
-        
-<?php
-    if (basename($_SERVER['SCRIPT_NAME']) == 'bans-country.php') {
-        echo '
+    
     <!--Select2-->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">';
-    }
-?>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet">
 
     <!--DataTables-->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.22/b-1.6.5/b-html5-1.6.5/r-2.2.6/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.11.3/b-2.1.0/b-html5-2.1.0/r-2.2.9/datatables.min.css"/>
  
-    <!--Flags-->
+	<!--Flags-->
     <link href="assets/plugins/flags/flags.css" rel="stylesheet">
 	
     <!--SCRIPT-->
     <!--=================================================-->
 
     <!--jQuery-->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
-	integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+    <script
+	src="https://code.jquery.com/jquery-3.6.0.min.js"
+	integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
 	crossorigin="anonymous"></script>
 	
 <?php
     if (basename($_SERVER['SCRIPT_NAME']) == 'dashboard.php' || basename($_SERVER['SCRIPT_NAME']) == 'visit-analytics.php') {
         echo '
 	<!--Chart.js-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>';
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.1/chart.min.js"></script>';
     }
 ?>
 
@@ -142,53 +129,13 @@ function head()
     <script src="https://openlayers.org/api/OpenLayers.js"></script>';
     }
 ?>
-<style>
-.scroll-btn {
-	height: 40px;
-	width: 40px;
-	border: 2px solid #000;
-	border-radius: 10%;
-	background-color: #000;
-	position: fixed;
-	bottom: 25px;
-	right: 20px;
-	opacity: 0.8;
-	z-index: 9999;
-	cursor: pointer;
-	display: none;
-}
-
-.scroll-btn .scroll-btn-arrow {
-	height: 12px;
-	width: 12px;
-	border: 3px solid;
-	border-right: none;
-	border-top: none;
-	margin: 15px 12px;
-	-webkit-transform: rotate(135deg);
-	-moz-transform: rotate(135deg);
-	-ms-transform: rotate(135deg);
-	-o-transform: rotate(135deg);
-	transform: rotate(135deg);
-	color: white;
-}
-
-.notouch .scroll-btn:hover { opacity: 0.8 }
-
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
-	.scroll-btn {
-		bottom: 8px;
-		right: 8px;
-	}
-}
-</style>
 </head>
 
 <body class="sidebar-mini layout-fixed layout-navbar-fixed control-sidebar-slide-open <?php
-if ($row['dark_mode'] == 1) {
+if ($settings['dark_mode'] == 1) {
     echo 'dark-mode';
 }
-?>" style="height: auto;">
+?>" class="height_auto">
 <div class="wrapper">
 
     <nav class="main-header navbar navbar-expand navbar-dark">
@@ -212,7 +159,7 @@ if ($row['dark_mode'] == 1) {
 		<ul class="nav navbar-nav ml-auto">
           <li class="nav-item d-none d-md-block">
              <a href="<?php
-    echo $site_url;
+    echo $settings['site_url'];
 ?>" class="nav-link" target="_blank" data-toggle="tooltip" title="View Site" data-toggle="tooltip" data-placement="bottom">
 			 <i class="fas fa-desktop"></i>
 			 </a>
@@ -220,13 +167,6 @@ if ($row['dark_mode'] == 1) {
           <li class="nav-item">
              <a href="settings.php" class="nav-link" data-toggle="tooltip" title="Settings" data-toggle="tooltip" data-placement="bottom"><i class="fas fa-cogs"></i></a>
           </li>
-		  
-<?php
-    $uname = $_SESSION['sec-username'];
-    $table = $prefix . 'settings';
-    $suser = $mysqli->query("SELECT username, password FROM `$table` WHERE username='$uname' LIMIT 1");
-    $urow  = mysqli_fetch_array($suser);
-?>
         </ul>
     </nav>
 
@@ -238,8 +178,8 @@ if ($row['dark_mode'] == 1) {
 	
 	<div class="sidebar">
 	
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-          <p style="margin: auto;"><a href="account.php" class="btn btn-sm btn-secondary btn-flat"><i class="fas fa-user fa-fw"></i> Account</a>
+      <div class="user-panel mt-3 d-flex align-content-center justify-content-center flex-wrap">
+          <p class="margin_auto"><a href="account.php" class="btn btn-sm btn-secondary btn-flat"><i class="fas fa-user fa-fw"></i> Account</a>
 		  &nbsp;&nbsp;<a href="logout.php" class="btn btn-sm btn-danger btn-flat"><i class="fas fa-sign-out-alt fa-fw"></i> Logout</a></p>
       </div>
 
@@ -351,10 +291,7 @@ if ($row['dark_mode'] == 1) {
 ?>">
               <i class="fas fa-code"></i>&nbsp; <p>SQL Injection
 <?php
-    $table = $prefix . 'sqli-settings';
-    $query = $mysqli->query("SELECT * FROM `$table`");
-    $row   = mysqli_fetch_array($query);
-    if ($row['protection'] == 1) {
+    if ($settings['sqli_protection'] == 1) {
         echo '<span class="right badge badge-success">ON</span>';
     } else {
         echo '<span class="right badge badge-danger">OFF</span>';
@@ -375,10 +312,7 @@ if ($row['dark_mode'] == 1) {
 ?>">
               <i class="fas fa-user-secret"></i>&nbsp; <p>Bad Bots
 <?php
-    $table = $prefix . 'badbot-settings';
-    $query = $mysqli->query("SELECT * FROM `$table`");
-    $row   = mysqli_fetch_array($query);
-    if ($row['protection'] == 1 OR $row['protection2'] == 1 OR $row['protection3'] == 1) {
+    if ($settings['badbot_protection'] == 1 OR $settings['badbot_protection2'] == 1 OR $settings['badbot_protection3'] == 1) {
         echo '<span class="right badge badge-success">ON</span>';
     } else {
         echo '<span class="right badge badge-danger">OFF</span>';
@@ -399,10 +333,7 @@ if ($row['dark_mode'] == 1) {
 ?>">
               <i class="fas fa-globe"></i>&nbsp; <p>Proxy
 <?php
-    $table = $prefix . 'proxy-settings';
-    $query = $mysqli->query("SELECT * FROM `$table`");
-    $row   = mysqli_fetch_array($query);
-    if ($row['protection'] > 0 OR $row['protection2'] == 1) {
+    if ($settings['proxy_protection'] > 0 OR $settings['proxy_protection2'] == 1) {
         echo '<span class="right badge badge-success">ON</span>';
     } else {
         echo '<span class="right badge badge-danger">OFF</span>';
@@ -423,12 +354,8 @@ if ($row['dark_mode'] == 1) {
 ?>">
               <i class="fas fa-keyboard"></i>&nbsp; <p>Spam
 <?php
-    $table    = $prefix . 'spam-settings';
-    $query    = $mysqli->query("SELECT * FROM `$table`");
-    $row      = mysqli_fetch_array($query);
-    $tablesp2 = $prefix . 'dnsbl-databases';
-    $querysp2 = $mysqli->query("SELECT * FROM `$tablesp2`");
-    if ($row['protection'] == 1 && mysqli_num_rows($querysp2) > 0) {
+    $querysp = $mysqli->query("SELECT * FROM `psec_dnsbl-databases`");
+    if ($settings['spam_protection'] == 1 && mysqli_num_rows($querysp) > 0) {
         echo '<span class="right badge badge-success">ON</span>';
     } else {
         echo '<span class="right badge badge-danger">OFF</span>';
@@ -438,16 +365,15 @@ if ($row['dark_mode'] == 1) {
         </li>
         
 <?php
-    $table   = $prefix . 'logs';
-    $lquery1 = $mysqli->query("SELECT * FROM `$table`");
+    $lquery1 = $mysqli->query("SELECT * FROM `psec_logs`");
     $lcount1 = mysqli_num_rows($lquery1);
-    $lquery2 = $mysqli->query("SELECT * FROM `$table` WHERE `type`='SQLi'");
+    $lquery2 = $mysqli->query("SELECT * FROM `psec_logs` WHERE `type`='SQLi'");
     $lcount2 = mysqli_num_rows($lquery2);
-    $lquery3 = $mysqli->query("SELECT * FROM `$table` WHERE `type`='Bad Bot' or `type`='Fake Bot' or type='Missing User-Agent header' or type='Missing header Accept' or type='Invalid IP Address header'");
+    $lquery3 = $mysqli->query("SELECT * FROM `psec_logs` WHERE `type`='Bad Bot' or `type`='Fake Bot' or type='Missing User-Agent header' or type='Missing header Accept' or type='Invalid IP Address header'");
     $lcount3 = mysqli_num_rows($lquery3);
-    $lquery4 = $mysqli->query("SELECT * FROM `$table` WHERE `type`='Proxy'");
+    $lquery4 = $mysqli->query("SELECT * FROM `psec_logs` WHERE `type`='Proxy'");
     $lcount4 = mysqli_num_rows($lquery4);
-    $lquery5 = $mysqli->query("SELECT * FROM `$table` WHERE `type`='Spammer'");
+    $lquery5 = $mysqli->query("SELECT * FROM `psec_logs` WHERE `type`='Spammer'");
     $lcount5 = mysqli_num_rows($lquery5);
 ?>
         <li class="nav-item has-treeview <?php
@@ -522,17 +448,16 @@ if ($row['dark_mode'] == 1) {
         </li>
         
 <?php
-    $table   = $prefix . 'bans';
-    $bquery1 = $mysqli->query("SELECT * FROM `$table`");
+    $bquery1 = $mysqli->query("SELECT * FROM `psec_bans`");
     $bcount1 = mysqli_num_rows($bquery1);
-    $table2  = $prefix . 'bans-country';
-    $bquery2 = $mysqli->query("SELECT * FROM `$table2`");
+
+    $bquery2 = $mysqli->query("SELECT * FROM `psec_bans-country`");
     $bcount2 = mysqli_num_rows($bquery2);
-    $table3  = $prefix . 'bans-ranges';
-    $bquery3 = $mysqli->query("SELECT * FROM `$table3`");
+
+    $bquery3 = $mysqli->query("SELECT * FROM `psec_bans-ranges`");
     $bcount3 = mysqli_num_rows($bquery3);
-    $table4  = $prefix . 'bans-other';
-    $bquery4 = $mysqli->query("SELECT * FROM `$table4`");
+
+    $bquery4 = $mysqli->query("SELECT * FROM `psec_bans-other`");
     $bcount4 = mysqli_num_rows($bquery4);
 ?>
         <li class="nav-item has-treeview <?php
@@ -596,30 +521,6 @@ if ($row['dark_mode'] == 1) {
         </li>
 		
 		<li class="nav-item <?php
-    if (basename($_SERVER['SCRIPT_NAME']) == 'adblocker-detection.php') {
-        echo 'active';
-    }
-?>">
-           <a href="adblocker-detection.php" class="nav-link <?php
-    if (basename($_SERVER['SCRIPT_NAME']) == 'adblocker-detection.php') {
-        echo 'active';
-    }
-?>">
-              <i class="fas fa-window-maximize"></i>&nbsp; <p>AdBlocker Detection
-<?php
-    $table = $prefix . 'adblocker-settings';
-    $query = $mysqli->query("SELECT * FROM `$table`");
-    $row   = mysqli_fetch_array($query);
-    if ($row['detection'] == 1) {
-        echo '<span class="right badge badge-success">ON</span>';
-    } else {
-        echo '<span class="right badge badge-primary">OFF</span>';
-    }
-?>     
-           </p></a>
-        </li>
-		
-		<li class="nav-item <?php
     if (basename($_SERVER['SCRIPT_NAME']) == 'bad-words.php') {
         echo 'active';
     }
@@ -631,8 +532,7 @@ if ($row['dark_mode'] == 1) {
 ?>">
               <i class="fas fa-filter"></i>&nbsp; <p>Bad Words
 <?php
-    $table   = $prefix . 'bad-words';
-    $queryfc = $mysqli->query("SELECT * FROM `$table` LIMIT 1");
+    $queryfc = $mysqli->query("SELECT * FROM `psec_bad-words` LIMIT 1");
     $countfc = mysqli_num_rows($queryfc);
     if ($countfc > 0) {
         echo '<span class="right badge badge-success">ON</span>';
@@ -675,10 +575,7 @@ if ($row['dark_mode'] == 1) {
 		
 		<li class="nav-header">ANALYTICS &nbsp;
 <?php
-    $table = $prefix . 'settings';
-    $query = $mysqli->query("SELECT * FROM `$table`");
-    $row   = mysqli_fetch_array($query);
-    if ($row['live_traffic'] == 1) {
+    if ($settings['live_traffic'] == 1) {
         echo '<span class="right badge badge-success">ON</span>';
     } else {
         echo '<span class="right badge badge-primary">OFF</span>';
@@ -797,16 +694,14 @@ if ($row['dark_mode'] == 1) {
 function footer()
 {
     include 'config.php';
-    
-    $table = $prefix . 'settings';
-    $query = $mysqli->query("SELECT * FROM `$table`");
-    $row   = mysqli_fetch_array($query);
+	
+	global $psec_version;
 ?>
 <footer class="main-footer">
     <div class="scroll-btn"><div class="scroll-btn-arrow"></div></div>
     <strong>&copy; <?php
     echo date("Y");
-?> <a href="https://maramsaiharsha.netlify.com" target="_blank">Harsha</a></strong>
+?> <a href="https://codecanyon.net/item/project-security-website-security-antivirus-firewall/15487703?ref=Antonov_WEB" target="_blank">Project SECURITY</a> v<?php echo $psec_version; ?></strong>
 	
 </footer>
 
@@ -814,71 +709,25 @@ function footer()
 
     <!--JAVASCRIPT-->
     <!--=================================================-->
-
-<script>
-// Hover tooltips
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-});
-
-(function($) { // Avoid conflicts with other libraries
-
-'use strict';
-
-$(function() {
-	var settings = {
-			min: 200,
-			scrollSpeed: 400
-		},
-		toTop = $('.scroll-btn'),
-		toTopHidden = true;
-
-	$(window).scroll(function() {
-		var pos = $(this).scrollTop();
-		if (pos > settings.min && toTopHidden) {
-			toTop.stop(true, true).fadeIn();
-			toTopHidden = false;
-		} else if(pos <= settings.min && !toTopHidden) {
-			toTop.stop(true, true).fadeOut();
-			toTopHidden = true;
-		}
-	});
-
-	toTop.bind('click touchstart', function() {
-		$('html, body').animate({
-			scrollTop: 0
-		}, settings.scrollSpeed);
-	});
-});
-
-})(jQuery);
-
-</script>
 	
-	<!--Popper JS-->
-	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-
-    <!--Bootstrap-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-	
-    <!--Admin-->
-    <script src="assets/js/admin.min.js"></script>
+    <!--Bootstrap 4-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+    
+	<!--AdminLTE-->
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
+	<script src="assets/js/psec.js"></script>
     
     <!--OverlayScrollbars-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/1.13.0/js/jquery.overlayScrollbars.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/1.13.1/js/jquery.overlayScrollbars.min.js"></script>
 
-<?php
-    if (basename($_SERVER['SCRIPT_NAME']) == 'bans-country.php') {
-        echo '
     <!--Select2-->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>';
-    }
-?>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
     
     <!--DataTables-->
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.22/b-1.6.5/b-html5-1.6.5/r-2.2.6/datatables.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/vfs_fonts.min.js"></script>
+
+	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.11.3/b-2.1.0/b-html5-2.1.0/r-2.2.9/datatables.min.js"></script>
 
 </body>
 </html>

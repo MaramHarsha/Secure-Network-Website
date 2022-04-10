@@ -1,18 +1,13 @@
 <?php
 //Spam Protection
-$table = $prefix . 'spam-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-
-if ($row['protection'] == 1) {
+if ($settings['spam_protection'] == 1) {
     
     $dnsbl_lookup = array();
     
-    $table2 = $prefix . 'dnsbl-databases';
-    $query2 = $mysqli->query("SELECT * FROM `$table2`");
-    while ($row2 = $query2->fetch_assoc()) {
+    $query = $mysqli->query("SELECT * FROM `psec_dnsbl-databases`");
+    while ($row = $query->fetch_assoc()) {
         
-        $dnsbl_lookup[] = $row2['database'];
+        $dnsbl_lookup[] = $row['database'];
         $reverse_ip     = implode(".", array_reverse(explode(".", $ip)));
         
         foreach ($dnsbl_lookup as $host) {
@@ -21,21 +16,16 @@ if ($row['protection'] == 1) {
                 $type = "Spammer";
                 
                 //Logging
-                if ($row['logging'] == 1) {
-                    psec_logging($mysqli, $prefix, $type);
-                }
-                
-                //AutoBan
-                if ($row['autoban'] == 1) {
-                    psec_autoban($mysqli, $prefix, $type);
+                if ($settings['spam_logging'] == 1) {
+                    psec_logging($mysqli, $type);
                 }
                 
                 //E-Mail Notification
-                if ($srow['mail_notifications'] == 1 && $row['mail'] == 1) {
-                    psec_mail($mysqli, $prefix, $site_url, $projectsecurity_path, $type);
+                if ($settings['mail_notifications'] == 1 && $settings['spam_mail'] == 1) {
+                    psec_mail($mysqli, $type);
                 }
                 
-                echo '<meta http-equiv="refresh" content="0;url=' . $row['redirect'] . '" />';
+                echo '<meta http-equiv="refresh" content="0;url=' . $settings['spam_redirect'] . '" />';
                 exit;
             }
         }

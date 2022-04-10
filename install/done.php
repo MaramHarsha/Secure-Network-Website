@@ -1,23 +1,28 @@
 <?php
 include "core.php";
+include "../config_settings.php";
 head();
 
 $database_host     = $_SESSION['database_host'];
 $database_username = $_SESSION['database_username'];
 $database_password = $_SESSION['database_password'];
 $database_name     = $_SESSION['database_name'];
-$table_prefix      = $_SESSION['table_prefix'];
-$username          = $_SESSION['username'];
-$password          = hash('sha256', $_SESSION['password']);
 
 if (isset($_SERVER['HTTPS'])) {
     $htp = 'https';
 } else {
     $htp = 'http';
 }
-$site_url             = $htp . '://' . $_SERVER['SERVER_NAME'];
-$fullpath             = "$htp://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-$projectsecurity_path = substr($fullpath, 0, strpos($fullpath, '/install'));
+$settings['site_url']             = $htp . '://' . $_SERVER['SERVER_NAME'];
+$fullpath                         = "$htp://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+$settings['projectsecurity_path'] = substr($fullpath, 0, strpos($fullpath, '/install'));
+$settings['sqli_redirect']        = $settings['projectsecurity_path'] . '/pages/blocked.php';
+$settings['proxy_redirect']       = $settings['projectsecurity_path'] . '/pages/proxy.php';
+$settings['spam_redirect']        = $settings['projectsecurity_path'] . '/pages/spammer.php';
+$settings['username']             = $_SESSION['username'];
+$settings['password']             = hash('sha256', $_SESSION['password']);
+
+file_put_contents('../config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
 
 @$db = new mysqli($database_host, $database_username, $database_password, $database_name);
 if ($db) {
@@ -26,9 +31,6 @@ if ($db) {
     $query = '';
     
     $sql_dump = file('database.sql');
-    
-    $sql_dump = str_replace("<DB_PREFIX>", $table_prefix, $sql_dump);
-    $sql_dump = str_replace("<PROJECTSECURITY_PATH>", $projectsecurity_path, $sql_dump);
     
     foreach ($sql_dump as $line) {
         
@@ -52,23 +54,16 @@ if ($db) {
     $config_file = str_replace("<DB_NAME>", $database_name, $config_file);
     $config_file = str_replace("<DB_USER>", $database_username, $config_file);
     $config_file = str_replace("<DB_PASSWORD>", $database_password, $config_file);
-    $config_file = str_replace("<DB_PREFIX>", $table_prefix, $config_file);
-    $config_file = str_replace("<PROJECTSECURITY_PATH>", $projectsecurity_path, $config_file);
-    $config_file = str_replace("<SITE_URL>", $site_url, $config_file);
-    
-    $link  = new mysqli($database_host, $database_username, $database_password, $database_name);
-    $table = $table_prefix . 'settings';
-    $query = mysqli_query($link, "UPDATE `$table` SET username='$username', password='$password'");
-	
+
     @chmod(CONFIG_FILE_PATH, 0777);
     @$f = fopen(CONFIG_FILE_PATH, "w+");
     if (!fwrite($f, $config_file) > 0) {
         echo 'Cannot open the configuration file to save the information';
     }
     fclose($f);
-    
+
 } else {
-    echo 'Database connecting error! Please check your database connection parameters.<br />';
+    echo 'Error establishing a database connection. Please check your database connection parameters.<br />';
 }
 ?>
 <center>
@@ -86,12 +81,12 @@ if ($db) {
 Change "<b>projectsecurity_folder</b>" with the path on which you installed the product)
 <br /><br />
 	<kbd>
-	    include_once "projectsecurity_folder/config.php";<br />
-	    include_once "projectsecurity_folder/project-security.php";
+	    include "projectsecurity_folder/config.php";<br />
+	    include "projectsecurity_folder/project-security.php";
 	</kbd>
 </div>
     
-<a href="../" class="btn-success btn btn-block"><i class="fas fa-arrow-circle-right"></i> Continue to Project SECURITY</a>
+<a href="../" class="btn-success btn col-12"><i class="fas fa-arrow-circle-right"></i> Continue to Project SECURITY</a><br /><br />
 </center>
 <?php
 footer();

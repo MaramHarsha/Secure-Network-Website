@@ -1,12 +1,8 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 $sec_username = $_SESSION['sec-username'];
-
-$table = $prefix . 'settings';
-$sql   = $mysqli->query("SELECT username, password FROM `$table` LIMIT 1");
-$row   = mysqli_fetch_assoc($sql);
 ?>
 <div class="content-wrapper">
 
@@ -47,7 +43,7 @@ $row   = mysqli_fetch_assoc($sql);
                                <div class="form-group">
 											<label class="control-label"><i class="fas fa-user"></i> Username: </label>
 											<input type="text" name="username" class="form-control" value="<?php
-echo $row['username'];
+echo $settings['username'];
 ?>" required>
 										</div>
                                         <hr />
@@ -69,18 +65,20 @@ echo $row['username'];
 </form>
 <?php
 if (isset($_POST['edit'])) {
-    $table = $prefix . 'settings';
     $username = addslashes($_POST['username']);
     $password = $_POST['password'];
-    
-    $query                    = $mysqli->query("UPDATE `$table` SET username='$username' WHERE username='$sec_username'");
+
+	$settings['username'] = $username;
     $_SESSION['sec-username'] = $username;
+	
     if ($password != null) {
-        $password                 = hash('sha256', $_POST['password']);
-        $query                    = $mysqli->query("UPDATE `$table` SET username='$username', password='$password' WHERE username='$sec_username'");
-        $_SESSION['sec-username'] = $username;
+        $password             = hash('sha256', $_POST['password']);
+		
+        $settings['password'] = $password;
     }
-    echo '<meta http-equiv="refresh" content="0;url=account.php">';
+	
+    file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
+	echo '<meta http-equiv="refresh" content="0;url=account.php">';
 }
 ?>
                 </div>

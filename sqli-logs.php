@@ -1,16 +1,16 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_GET['delete-id'])) {
     $id    = (int) $_GET["delete-id"];
-    $table = $prefix . 'logs';
-    $query = $mysqli->query("DELETE FROM `$table` WHERE id='$id'");
+
+    $query = $mysqli->query("DELETE FROM `psec_logs` WHERE id='$id'");
 }
 
 if (isset($_GET['delete-all'])) {
-    $table = $prefix . 'logs';
-    $query = $mysqli->query("DELETE FROM `$table` WHERE type='SQLi'");
+
+    $query = $mysqli->query("DELETE FROM `psec_logs` WHERE type='SQLi'");
 }
 ?>
 <div class="content-wrapper">
@@ -63,8 +63,7 @@ if (isset($_GET['delete-all'])) {
 									</thead>
 									<tbody>
 <?php
-$table = $prefix . 'logs';
-$sql   = $mysqli->query("SELECT id, ip, date, time, browser, browser_code, os, os_code, country, country_code, type, page, query FROM `$table` WHERE type='SQLi' ORDER by id DESC");
+$sql = $mysqli->query("SELECT id, ip, date, time, browser, browser_code, os, os_code, country, country_code, type, page, query FROM `psec_logs` WHERE type='SQLi' ORDER by id DESC");
 while ($row = mysqli_fetch_assoc($sql)) {
     echo '
 										<tr>
@@ -99,22 +98,7 @@ while ($row = mysqli_fetch_assoc($sql)) {
 			</div>
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
-</div>
-<script>
-$(document).ready(function() {
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-        "order": [[ 1, "desc" ]],
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>    
+</div>  
 <?php
 footer();
 ?>

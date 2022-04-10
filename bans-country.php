@@ -1,21 +1,23 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_GET['delete-id'])) {
     $id    = (int) $_GET["delete-id"];
-    $table = $prefix . 'bans-country';
-    $query = $mysqli->query("DELETE FROM `$table` WHERE id='$id'");
+
+    $query = $mysqli->query("DELETE FROM `psec_bans-country` WHERE id='$id'");
 }
 
 if (isset($_GET['blacklist'])) {
-    $table = $prefix . 'settings';
-    $query = $mysqli->query("UPDATE `$table` SET countryban_blacklist='1' WHERE id=1");
+    $settings['countryban_blacklist'] = 1;
+	
+	file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
 }
 
 if (isset($_GET['whitelist'])) {
-    $table = $prefix . 'settings';
-    $query = $mysqli->query("UPDATE `$table` SET countryban_blacklist='0' WHERE id=1");
+    $settings['countryban_blacklist'] = 0;
+	
+	file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
 }
 ?>
 <div class="content-wrapper">
@@ -46,8 +48,7 @@ if (isset($_GET['whitelist'])) {
                     
 <?php
 if (isset($_POST['add-country'])) {
-    $table = $prefix . "bans-country";
-    
+
     $country  = $_POST['country'];
     $redirect = $_POST['redirect'];
     $url      = strip_tags(addslashes($_POST['url']));
@@ -59,7 +60,7 @@ if (isset($_POST['add-country'])) {
         </div>
 		';
     } else {
-        $queryvalid = $mysqli->query("SELECT * FROM `$table` WHERE country='$country' LIMIT 1");
+        $queryvalid = $mysqli->query("SELECT * FROM `psec_bans-country` WHERE country='$country' LIMIT 1");
         $validator  = mysqli_num_rows($queryvalid);
         if ($validator > "0") {
             echo '<br />
@@ -68,7 +69,7 @@ if (isset($_POST['add-country'])) {
         </div>
 		';
         } else {
-            $query = $mysqli->query("INSERT INTO `$table` (country, redirect, url) VALUES('$country', '$redirect', '$url')");
+            $query = $mysqli->query("INSERT INTO `psec_bans-country` (country, redirect, url) VALUES('$country', '$redirect', '$url')");
         }
     }
 }
@@ -80,7 +81,6 @@ if (isset($_POST['add-country'])) {
 <?php
 if (isset($_GET['edit-id'])) {
     $id    = (int) $_GET["edit-id"];
-    $table = $prefix . 'bans-country';
     
     if (isset($_POST['edit-ban'])) {
         $country  = $_POST['country'];
@@ -94,11 +94,11 @@ if (isset($_GET['edit-id'])) {
         </div>
 		';
         } else {
-            $update = $mysqli->query("UPDATE `$table` SET country='$country', redirect='$redirect', url='$url' WHERE id='$id'");
+            $update = $mysqli->query("UPDATE `psec_bans-country` SET country='$country', redirect='$redirect', url='$url' WHERE id='$id'");
         }
     }
     
-    $result = $mysqli->query("SELECT * FROM `$table` WHERE id = '$id'");
+    $result = $mysqli->query("SELECT * FROM `psec_bans-country` WHERE id = '$id'");
     $row    = mysqli_fetch_assoc($result);
     if (empty($id)) {
         echo '<meta http-equiv="refresh" content="0; url=bans-country.php">';
@@ -119,7 +119,7 @@ if (isset($_GET['edit-id'])) {
 						<div class="card-body">
                               <div class="form-group">
 									<label class="control-label">Country: </label>
-<select class="form-control select2" style="width: 100%;" name="country" required> 
+<select class="form-control select2" class="width100" name="country" required> 
 <option value="<?php
     echo $row['country'];
 ?>" selected><?php
@@ -373,6 +373,7 @@ if (isset($_GET['edit-id'])) {
 <option value="Zaire">Zaire</option>
 <option value="Zambia">Zambia</option>
 <option value="Zimbabwe">Zimbabwe</option>
+<option value="Unknown">Unknown</option>
 </select>
 										</div>
                                         <div class="form-group">
@@ -417,26 +418,20 @@ if (isset($_GET['edit-id'])) {
 						</div>
 						<div class="card-body">
                             
-<?php
-$table = $prefix . 'settings';
-$query = $mysqli->query("SELECT `countryban_blacklist` FROM `$table` WHERE id='1'");
-$row   = $query->fetch_assoc();
-?>
-                            
                         <div class="callout callout-info" role="alert">
 							Only one country ban mode can be selected. The countries table is common for the both ban modes.
 							Redirecting option is not used when Whitelist country ban mode is selected.
 						</div>
 						Ban Mode: 
-                        <a href="?blacklist" class="btn btn-flat btn-md btn-rounded <?php
-if ($row['countryban_blacklist'] == 1) {
+                        <a href="?blacklist" class="btn btn-md btn-rounded <?php
+if ($settings['countryban_blacklist'] == 1) {
     echo 'btn-danger';
 } else {
     echo 'btn-default';
 }
 ?>">Blacklist</a>
-                        <a href="?whitelist" class="btn btn-flat btn-md btn-rounded <?php
-if ($row['countryban_blacklist'] == 0) {
+                        <a href="?whitelist" class="btn btn-md btn-rounded <?php
+if ($settings['countryban_blacklist'] == 0) {
     echo 'btn-success';
 } else {
     echo 'btn-default';
@@ -444,7 +439,7 @@ if ($row['countryban_blacklist'] == 0) {
 ?>">Whitelist</a> 
                         <hr />
                             
-<table id="dt-basic" class="table table-bordered table-hover table-sm">
+<table id="dt-basic2" class="table table-bordered table-hover table-sm">
 									<thead class="<?php echo $thead; ?>">
 										<tr>
 											<th><i class="fas fa-globe"></i> Country</th>
@@ -454,8 +449,7 @@ if ($row['countryban_blacklist'] == 0) {
 									</thead>
 									<tbody>
 <?php
-$tablebc = $prefix . 'bans-country';
-$querybc = $mysqli->query("SELECT * FROM `$tablebc`");
+$querybc = $mysqli->query("SELECT * FROM `psec_bans-country`");
 while ($rowbc = $querybc->fetch_assoc()) {
     echo '
 										<tr>
@@ -491,7 +485,7 @@ while ($rowbc = $querybc->fetch_assoc()) {
 						<form class="form-horizontal" action="" method="post">
 							<div class="form-group">
 								<label class="control-label">Country: </label>
-<select class="form-control select2" style="width: 100%;" name="country" required>
+<select class="form-control select2" class="width100" name="country" required>
 <option value="Afganistan">Afghanistan</option>
 <option value="Albania">Albania</option>
 <option value="Algeria">Algeria</option>
@@ -740,6 +734,7 @@ while ($rowbc = $querybc->fetch_assoc()) {
 <option value="Zaire">Zaire</option>
 <option value="Zambia">Zambia</option>
 <option value="Zimbabwe">Zimbabwe</option>
+<option value="Unknown">Unknown</option>
 </select>
 										</div>
                                         <div class="form-group">
@@ -771,23 +766,7 @@ while ($rowbc = $querybc->fetch_assoc()) {
 			</div>
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
-</div>
-<script>
-$(document).ready(function() {
-
-    $(".select2").select2();
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>    
+</div>    
 <?php
 footer();
 ?>

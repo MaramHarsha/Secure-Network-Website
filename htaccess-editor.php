@@ -1,5 +1,5 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_POST['ht-edit'])) {
@@ -81,10 +81,10 @@ echo file_get_contents($htaccess);
                                          </li>
                                      </ul>
                                     </div>
-									</div>
+								</div>
                         </div>
                         <div class="card-footer text-right">
-				            <input class="btn btn-flat btn-primary" type="submit" name="ht-edit" value="Save all changes">
+				            <input class="btn btn-block btn-primary" type="submit" name="ht-edit" value="Save all changes">
 				        </div>
                         </form>
                      </div>

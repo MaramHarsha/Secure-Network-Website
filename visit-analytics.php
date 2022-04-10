@@ -1,84 +1,43 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 // Purge logs older than 30 days
 $datetod = strtotime(date('d F Y', strtotime('-30 days')));
 
-$table = $prefix . 'live-traffic';
-$query2 = $mysqli->query("SELECT id, date FROM `$table` ORDER BY id ASC");
+$query2 = $mysqli->query("SELECT id, date FROM `psec_live-traffic` ORDER BY id ASC");
 while ($row2 = $query2->fetch_assoc()) {
 	if (strtotime($row2['date']) < $datetod) {
 		$id     = $row2['id'];
-		$query3 = $mysqli->query("DELETE FROM `$table` WHERE id = '$id'");
+		$query3 = $mysqli->query("DELETE FROM `psec_live-traffic` WHERE id = '$id'");
 	}
 }
 
 if (isset($_GET['delete-all'])) {
-    $table = $prefix . 'live-traffic';
-    $query = $mysqli->query("TRUNCATE TABLE `$table`");
+    $query = $mysqli->query("TRUNCATE TABLE `psec_live-traffic`");
 }
 
 //Today Stats
 @$date = @date('d F Y');
 @$ctime = @date("H:i", strtotime('-30 seconds'));
 
-$table    = $prefix . 'live-traffic';
-$tsquery1 = $mysqli->query("SELECT id FROM `$table` WHERE `date`='$date' AND `time`>='$ctime'");
+$tsquery1 = $mysqli->query("SELECT id FROM `psec_live-traffic` WHERE `date`='$date' AND `time`>='$ctime'");
 $tscount1 = $tsquery1->num_rows;
-$tsquery2 = $mysqli->query("SELECT id FROM `$table` WHERE `date`='$date' AND `uniquev`=1");
+$tsquery2 = $mysqli->query("SELECT id FROM `psec_live-traffic` WHERE `date`='$date' AND `uniquev`=1");
 $tscount2 = $tsquery2->num_rows;
-$tsquery3 = $mysqli->query("SELECT id FROM `$table` WHERE `date`='$date'");
+$tsquery3 = $mysqli->query("SELECT id FROM `psec_live-traffic` WHERE `date`='$date'");
 $tscount3 = $tsquery3->num_rows;
-$tsquery4 = $mysqli->query("SELECT id FROM `$table` WHERE `date`='$date' AND `uniquev`=1 AND `bot`=1");
+$tsquery4 = $mysqli->query("SELECT id FROM `psec_live-traffic` WHERE `date`='$date' AND `uniquev`=1 AND `bot`=1");
 $tscount4 = $tsquery4->num_rows;
 
 //Month Stats
 @$mdate = @date('F Y');
-$msquery1 = $mysqli->query("SELECT id FROM `$table` WHERE `date` LIKE '%$mdate' AND `uniquev`=1");
+$msquery1 = $mysqli->query("SELECT id FROM `psec_live-traffic` WHERE `date` LIKE '%$mdate' AND `uniquev`=1");
 $mscount1 = $msquery1->num_rows;
-$msquery2 = $mysqli->query("SELECT id FROM `$table` WHERE `date` LIKE '%$mdate'");
+$msquery2 = $mysqli->query("SELECT id FROM `psec_live-traffic` WHERE `date` LIKE '%$mdate'");
 $mscount2 = $msquery2->num_rows;
-$msquery3 = $mysqli->query("SELECT id FROM `$table` WHERE `date` LIKE '%$mdate' AND `uniquev`=1 AND `bot`=1");
+$msquery3 = $mysqli->query("SELECT id FROM `psec_live-traffic` WHERE `date` LIKE '%$mdate' AND `uniquev`=1 AND `bot`=1");
 $mscount3 = $msquery3->num_rows;
-
-//Browser Stats
-$bquery1 = $mysqli->query("SELECT id FROM `$table` WHERE `browser` = 'Google Chrome'");
-$bcount1 = $bquery1->num_rows;
-$bquery2 = $mysqli->query("SELECT id FROM `$table` WHERE `browser` LIKE '%Firefox%'");
-$bcount2 = $bquery2->num_rows;
-$bquery3 = $mysqli->query("SELECT id FROM `$table` WHERE `browser` = 'Opera'");
-$bcount3 = $bquery3->num_rows;
-$bquery4 = $mysqli->query("SELECT id FROM `$table` WHERE `browser` LIKE '%Edge%'");
-$bcount4 = $bquery4->num_rows;
-$bquery5 = $mysqli->query("SELECT id FROM `$table` WHERE `browser` = 'Internet Explorer'");
-$bcount5 = $bquery5->num_rows;
-$bquery6 = $mysqli->query("SELECT id FROM `$table` WHERE `browser` LIKE '%Safari%'");
-$bcount6 = $bquery6->num_rows;
-$bquery7 = $mysqli->query("SELECT id FROM `$table` WHERE `browser` != 'Google Chrome' AND `browser` NOT LIKE '%Firefox%' AND `browser` != 'Opera' AND `browser` NOT LIKE '%Edge%' AND `browser` != 'Internet Explorer' AND `browser` NOT LIKE '%Safari%'");
-$bcount7 = $bquery7->num_rows;
-
-//OS Stats
-$oquery1 = $mysqli->query("SELECT id FROM `$table` WHERE `os` LIKE '%Windows%'");
-$ocount1 = $oquery1->num_rows;
-$oquery2 = $mysqli->query("SELECT id FROM `$table` WHERE `os` LIKE '%Linux%'");
-$ocount2 = $oquery2->num_rows;
-$oquery3 = $mysqli->query("SELECT id FROM `$table` WHERE `os` LIKE '%Android%'");
-$ocount3 = $oquery3->num_rows;
-$oquery4 = $mysqli->query("SELECT id FROM `$table` WHERE `os` LIKE '%iOS%'");
-$ocount4 = $oquery4->num_rows;
-$oquery5 = $mysqli->query("SELECT id FROM `$table` WHERE `os` LIKE '%Mac OS X%'");
-$ocount5 = $oquery5->num_rows;
-$oquery6 = $mysqli->query("SELECT id FROM `$table` WHERE `os` NOT LIKE '%Windows%' AND  `os` NOT LIKE '%Linux%' AND `os` NOT LIKE '%Android%' AND `os` NOT LIKE '%iOS%' AND `os` NOT LIKE '%Mac OS X%'");
-$ocount6 = $oquery6->num_rows;
-
-//Platform Stats
-$pquery1 = $mysqli->query("SELECT id FROM `$table` WHERE `device_type` = 'Computer'");
-$pcount1 = $pquery1->num_rows;
-$pquery2 = $mysqli->query("SELECT id FROM `$table` WHERE `device_type` = 'Mobile'");
-$pcount2 = $pquery2->num_rows;
-$pquery3 = $mysqli->query("SELECT id FROM `$table` WHERE `device_type` = 'Tablet'");
-$pcount3 = $pquery3->num_rows;
 ?>
 <div class="content-wrapper">
 
@@ -230,14 +189,14 @@ echo $mscount3;
 						<div class="row">
 						     <div class="col-md-6">
 							      <center><h5><i class="fas fa-globe"></i> Browser Statistics</h5></center>
-								  <div id="canvas-holder" style="width:100%">
+								  <div id="canvas-holder" class="width100">
 								  	  <canvas id="browser-graph"></canvas>
 								  </div>
 							 </div>
 							 
 							 <div class="col-md-6">
 							      <center><h5><i class="fas fa-desktop"></i> Operating System Statistics</h5></center>
-							      <div id="canvas-holder" style="width:100%">
+							      <div id="canvas-holder" class="width100">
 								  	  <canvas id="os-graph"></canvas>
 								  </div>
 							 </div>
@@ -245,7 +204,7 @@ echo $mscount3;
 					  <div class="row">
 							 <div class="col-md-6">
 							      <br /><center><h5><i class="fas fa-mobile-alt"></i> Device Statistics</h5></center>
-							      <div id="canvas-holder" style="width:100%">
+							      <div id="canvas-holder" class="width100">
 								  	  <canvas id="device-graph"></canvas>
 								  </div>
 							 </div>
@@ -461,7 +420,7 @@ $countries = array(
 );
 
 foreach ($countries as $country) {
-    $log_result = $mysqli->query("SELECT country_code FROM `$table` WHERE `country` LIKE '%$country%'");
+    $log_result = $mysqli->query("SELECT country_code FROM `psec_live-traffic` WHERE `country` LIKE '%$country%'");
     $log_rows   = mysqli_num_rows($log_result);
     $lgrow      = mysqli_fetch_assoc($log_result);
     
@@ -492,266 +451,6 @@ foreach ($countries as $country) {
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-var config = {
-    type: 'pie',
-    data: {
-		datasets: [{
-			data: [
-				<?php
-echo $bcount1;
-?>,
-				<?php
-echo $bcount2;
-?>,
-				<?php
-echo $bcount3;
-?>,
-				<?php
-echo $bcount4;
-?>,
-				<?php
-echo $bcount5;
-?>,
-				<?php
-echo $bcount6;
-?>,
-				<?php
-echo $bcount7;
-?>,
-					],
-					backgroundColor: [
-						'#32CD32',
-    					'#FFD700',
-    					'#FF0000',
-						'#00BFFF',
-						'#1E90FF',
-						'#B0C4DE',
-    					'#000000',
-					]
-				}],
-				labels: [
-					'Google Chrome',
-					'Firefox',
-					'Opera',
-					'Edge',
-					'Internet Explorer',
-					'Safari',
-					'Other'
-				]
-			},
-			options: {
-				responsive: true
-			}
-  };
-  
-var config2 = {
-    type: 'pie',
-    data: {
-		datasets: [{
-			data: [
-				<?php
-echo $ocount1;
-?>,
-				<?php
-echo $ocount2;
-?>,
-				<?php
-echo $ocount3;
-?>,
-				<?php
-echo $ocount4;
-?>,
-				<?php
-echo $ocount5;
-?>,
-				<?php
-echo $ocount6;
-?>,
-					],
-					backgroundColor: [
-						'#1E90FF',
-    					'#FFD700',
-    					'#7CFC00',
-						'#D3D3D3',
-						'#B0C4DE',
-    					'#000000',
-					]
-				}],
-				labels: [
-					'Windows',
-					'Linux',
-					'Android',
-					'iOS',
-					'Mac OS X',
-					'Other'
-				]
-			},
-			options: {
-				responsive: true
-			}
-  };
-  
-var config3 = {
-    type: 'pie',
-    data: {
-		datasets: [{
-			data: [
-				<?php
-echo $pcount2;
-?>,
-				<?php
-echo $pcount3;
-?>,
-				<?php
-echo $pcount1;
-?>,
-					],
-					backgroundColor: [
-						'#00BFFF',
-    					'#FFD700',
-    					'#FF0000',
-					]
-				}],
-				labels: [
-					'Mobile',
-					'Tablet',
-					'Computer'
-				]
-			},
-			options: {
-				responsive: true
-			}
-  };
-  
-		var config4 = {
-			type: 'line',
-			data: {
-				labels: [
-<?php
-$i    = 1;
-@$days = cal_days_in_month(CAL_GREGORIAN, date("n"), date("Y"));
-while ($i <= $days) {
-    echo "'$i'";
-    
-    if ($i != $days) {
-        echo ',';
-    }
-    
-    $i++;
-}
-?>
-				],
-				datasets: [{
-					label: 'Total Visits',
-					backgroundColor: '#1E90FF',
-					borderColor: '#1E90FF',
-					data: [
-<?php
-$i    = 1;
-$days = cal_days_in_month(CAL_GREGORIAN, date("n"), date("Y"));
-while ($i <= $days) {
-    @$mdatef = sprintf("%02d", $i) . ' ' . date("F Y");
-    $mquery1 = $mysqli->query("SELECT id FROM `$table` WHERE `date` = '$mdatef'");
-    $mcount1 = $mquery1->num_rows;
-    echo "'$mcount1'";
-    
-    if ($i != $days) {
-        echo ',';
-    }
-    
-    $i++;
-}
-?>
-					],
-					fill: false,
-				}, {
-					label: 'Unique Visits',
-					fill: false,
-					backgroundColor: '#3CB371',
-					borderColor: '#3CB371',
-					data: [
-<?php
-$i    = 1;
-$days = cal_days_in_month(CAL_GREGORIAN, date("n"), date("Y"));
-while ($i <= $days) {
-    @$mdatef = sprintf("%02d", $i) . ' ' . date("F Y");
-    $mquery2 = $mysqli->query("SELECT id FROM `$table` WHERE `date` = '$mdatef' AND `uniquev`=1");
-    $mcount2 = $mquery2->num_rows;
-    echo "'$mcount2'";
-    
-    if ($i != $days) {
-        echo ',';
-    }
-    
-    $i++;
-}
-?>
-					],
-				}]
-			},
-			options: {
-				responsive: true,
-				bezierCurve: false,
-				tooltips: {
-					mode: 'index',
-					intersect: false,
-				},
-				hover: {
-					mode: 'nearest',
-					intersect: true
-				},
-				elements: {
-					line: {
-						tension: 0
-					}
-				},
-				scales: {
-					xAxes: [{
-						display: true,
-						scaleLabel: {
-							display: true,
-							labelString: '<?php
-echo date("F Y");
-?> '
-						}
-					}],
-					yAxes: [{
-						display: true,
-						scaleLabel: {
-							display: true,
-							labelString: 'Visits'
-						}
-					}]
-				}
-			}
-		};
-  
-  window.onload = function() {
-	var ctx = document.getElementById('browser-graph').getContext('2d');
-	window.browsergraph = new Chart(ctx, config);
-	var ctx2 = document.getElementById('os-graph').getContext('2d');
-	window.osgraph = new Chart(ctx2, config2);
-	var ctx3 = document.getElementById('device-graph').getContext('2d');
-	window.devicegraph = new Chart(ctx3, config3);
-	var ctx4 = document.getElementById('visits-chart').getContext('2d');
-	window.visitschart = new Chart(ctx4, config4);
-  };
-  
-$(document).ready(function() {
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-        "order": [[ 1, "desc" ]],
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>
 <?php
 footer();
 ?>

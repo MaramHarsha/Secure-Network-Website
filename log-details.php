@@ -1,11 +1,11 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_GET['id'])) {
     $id     = (int) $_GET["id"];
-    $table  = $prefix . 'logs';
-    $result = $mysqli->query("SELECT * FROM `$table` WHERE id = '$id'");
+
+    $result = $mysqli->query("SELECT * FROM `psec_logs` WHERE id = '$id'");
     $row    = mysqli_fetch_assoc($result);
     if (empty($id)) {
         echo '<meta http-equiv="refresh" content="0; url=all-logs.php">';
@@ -18,7 +18,6 @@ if (isset($_GET['id'])) {
 	
     $ip = $row['ip'];
 	if (isset($_GET['ban-ip'])) {
-        $table = $prefix . "bans";
     
         $ip       = addslashes(htmlspecialchars($ip));
         $date     = date("d F Y");
@@ -28,19 +27,18 @@ if (isset($_GET['id'])) {
         $url      = "";
     
         if (filter_var($ip, FILTER_VALIDATE_IP)) {
-            $queryvalid = $mysqli->query("SELECT * FROM `$table` WHERE ip='$ip' LIMIT 1");
+            $queryvalid = $mysqli->query("SELECT * FROM `psec_bans` WHERE ip='$ip' LIMIT 1");
             $validator  = mysqli_num_rows($queryvalid);
                 if ($validator <= "0") {
-                    $query = $mysqli->query("INSERT INTO `$table` (`ip`, `date`, `time`, `reason`, `redirect`, `url`) VALUES ('$ip', '$date', '$time', '$reason', '$redirect', '$url')");
+                    $query = $mysqli->query("INSERT INTO `psec_bans` (`ip`, `date`, `time`, `reason`, `redirect`, `url`) VALUES ('$ip', '$date', '$time', '$reason', '$redirect', '$url')");
                 }
             }
         }
 
         if (isset($_GET['unban-ip'])) {
             $ip    = addslashes(htmlspecialchars($ip));
-	
-            $table = $prefix . "bans";
-            $query = $mysqli->query("DELETE FROM `$table` WHERE ip='$ip'");
+			
+            $query = $mysqli->query("DELETE FROM `psec_bans` WHERE ip='$ip'");
         }
 ?>  
 <div class="content-wrapper">
@@ -268,7 +266,7 @@ if (isset($_GET['id'])) {
                                         <label class="control-label">
                                             <i class="fas fa-location-arrow"></i> Possible Location
                                         </label>
-									    <center><div id="mapdiv" style="width: 99%; height:450px"></div></center>
+									    <center><div id="mapdiv" class="map_div"></div></center>
 									
 									</div>
                      </div>
@@ -284,26 +282,28 @@ if (isset($_GET['id'])) {
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
+
+<script type="text/javascript">
+
     map = new OpenLayers.Map("mapdiv");
     map.addLayer(new OpenLayers.Layer.OSM());
 
-    var lonLat = new OpenLayers.LonLat( <?php
+    var lonLat = new OpenLayers.LonLat(<?php
     echo $row['longitude'];
-?> , <?php
+?>, <?php
     echo $row['latitude'];
-?> )
-          .transform(
+?>)
+        .transform(
             new OpenLayers.Projection("EPSG:4326"),
             map.getProjectionObject()
-          );
+        );
           
-    var zoom=18;
-    var markers = new OpenLayers.Layer.Markers( "Markers" );
+    var zoom = 18;
+    var markers = new OpenLayers.Layer.Markers("Markers");
 	
     map.addLayer(markers);
     markers.addMarker(new OpenLayers.Marker(lonLat));
-    map.setCenter (lonLat, zoom);
+    map.setCenter(lonLat, zoom);
 </script>
 <?php
     footer();

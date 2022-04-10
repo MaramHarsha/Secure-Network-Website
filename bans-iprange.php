@@ -1,16 +1,15 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_GET['delete-all'])) {
-    $table = $prefix . 'bans-ranges';
-    $query = $mysqli->query("TRUNCATE TABLE `$table`");
+    $query = $mysqli->query("TRUNCATE TABLE `psec_bans-ranges`");
 }
 
 if (isset($_GET['delete-id'])) {
     $id    = (int) $_GET["delete-id"];
-    $table = $prefix . 'bans-ranges';
-    $query = $mysqli->query("DELETE FROM `$table` WHERE id='$id'");
+
+    $query = $mysqli->query("DELETE FROM `psec_bans-ranges` WHERE id='$id'");
 }
 ?>
 <div class="content-wrapper">
@@ -41,11 +40,9 @@ if (isset($_GET['delete-id'])) {
 				
 <?php
 if (isset($_POST['ban-iprange'])) {
-    $table = $prefix . "bans-ranges";
-    
     $ip_range = addslashes(htmlspecialchars($_POST['ip_range']));
     
-    $queryvalid = $mysqli->query("SELECT * FROM `$table` WHERE ip_range='$ip_range' LIMIT 1");
+    $queryvalid = $mysqli->query("SELECT * FROM `psec_bans-ranges` WHERE ip_range='$ip_range' LIMIT 1");
     $validator  = mysqli_num_rows($queryvalid);
     if ($validator > "0") {
         echo '<br />
@@ -54,7 +51,7 @@ if (isset($_POST['ban-iprange'])) {
         </div>
 		';
     } else {
-        $query = $mysqli->query("INSERT INTO `$table` (`ip_range`) VALUES ('$ip_range')");
+        $query = $mysqli->query("INSERT INTO `psec_bans-ranges` (`ip_range`) VALUES ('$ip_range')");
     }
 }
 ?>
@@ -65,15 +62,14 @@ if (isset($_POST['ban-iprange'])) {
 <?php
 if (isset($_GET['edit-id'])) {
     $id    = (int) $_GET["edit-id"];
-    $table = $prefix . 'bans-ranges';
     
     if (isset($_POST['edit-ban'])) {
-        $ip_range = $_POST['ip_range'];
+        $ip_range = addslashes(htmlspecialchars($_POST['ip_range']));
         
-        $update = $mysqli->query("UPDATE `$table` SET ip_range='$ip_range' WHERE id='$id'");
+        $update = $mysqli->query("UPDATE `psec_bans-ranges` SET ip_range = '$ip_range' WHERE id='$id'");
     }
     
-    $result = $mysqli->query("SELECT * FROM `$table` WHERE id = '$id'");
+    $result = $mysqli->query("SELECT * FROM `psec_bans-ranges` WHERE id = '$id'");
     $row    = mysqli_fetch_assoc($result);
     if (empty($id)) {
         echo '<meta http-equiv="refresh" content="0; url=bans-iprange.php">';
@@ -94,7 +90,7 @@ if (isset($_GET['edit-id'])) {
 						<div class="card-body">
 							<div class="form-group">
 								<label class="control-label">IP Range: </label>
-								<input name="ip_range" class="form-control" type="text" pattern="[0-9]*\.?[0-9]*\.?[0-9]*" maxlength="11" value="<?php
+								<input name="ip_range" class="form-control" type="text" maxlength="19" value="<?php
     echo $row['ip_range'];
 ?>" required>
 							</div>
@@ -119,7 +115,7 @@ if (isset($_GET['edit-id'])) {
 						</div>
 						<div class="card-body">
 
-<table id="dt-basic" class="table table-bordered table-hover table-sm">
+<table id="dt-basic2" class="table table-bordered table-hover table-sm">
 									<thead class="<?php echo $thead; ?>">
 										<tr>
 						                  <th><i class="fas fa-grip-horizontal"></i> IP Range</th>
@@ -128,8 +124,7 @@ if (isset($_GET['edit-id'])) {
 									</thead>
 									<tbody>
 <?php
-$table = $prefix . 'bans-ranges';
-$query = $mysqli->query("SELECT * FROM `$table`");
+$query = $mysqli->query("SELECT * FROM `psec_bans-ranges`");
 while ($row = $query->fetch_assoc()) {
     echo '
 										<tr>
@@ -157,7 +152,7 @@ while ($row = $query->fetch_assoc()) {
 						<form class="form-horizontal" action="" method="post">
 							<div class="form-group">
 								<label class="control-label">IP Range: </label>
-								<input name="ip_range" class="form-control" type="text" placeholder="Format: 12.34.56" pattern="[0-9]*\.?[0-9]*\.?[0-9]*" maxlength="11" value="" required>
+								<input name="ip_range" class="form-control" type="text" placeholder="Format: 12.34.56 or 1111:db8:3333:4444" maxlength="19" value="" required>
 							</div>
                         </div>
                         <div class="card-footer">
@@ -177,20 +172,6 @@ while ($row = $query->fetch_assoc()) {
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-$(document).ready(function() {
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>
 <?php
 footer();
 ?>

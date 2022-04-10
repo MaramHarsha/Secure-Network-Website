@@ -3,7 +3,6 @@ $host     = "<DB_HOST>"; // Database Host
 $user     = "<DB_USER>"; // Database Username
 $password = "<DB_PASSWORD>"; // Database's user Password
 $database = "<DB_NAME>"; // Database Name
-$prefix   = "<DB_PREFIX>"; // Database Prefix for the script tables
 
 $mysqli = new mysqli($host, $user, $password, $database);
 
@@ -15,6 +14,6 @@ if ($mysqli->connect_errno) {
 
 $mysqli->set_charset("utf8mb4");
 
-$site_url             = "<SITE_URL>";
-$projectsecurity_path = "<PROJECTSECURITY_PATH>";
+// Settings
+include "config_settings.php";
 ?>

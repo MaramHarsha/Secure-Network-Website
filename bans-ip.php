@@ -1,16 +1,15 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_GET['delete-all'])) {
-    $table = $prefix . 'bans';
-    $query = $mysqli->query("TRUNCATE TABLE `$table`");
+    $query = $mysqli->query("TRUNCATE TABLE `psec_bans`");
 }
 
 if (isset($_GET['delete-id'])) {
     $id    = (int) $_GET["delete-id"];
-    $table = $prefix . 'bans';
-    $query = $mysqli->query("DELETE FROM `$table` WHERE id='$id'");
+
+    $query = $mysqli->query("DELETE FROM `psec_bans` WHERE id='$id'");
 }
 ?>
 <div class="content-wrapper">
@@ -41,8 +40,7 @@ if (isset($_GET['delete-id'])) {
 				
 <?php
 if (isset($_POST['ban-ip'])) {
-    $table = $prefix . "bans";
-    
+	
     $ip       = addslashes(htmlspecialchars($_POST['ip']));
     $date     = date("d F Y");
     $time     = date("H:i");
@@ -63,7 +61,7 @@ if (isset($_POST['ban-ip'])) {
         </div>
 		';
     } else {
-        $queryvalid = $mysqli->query("SELECT * FROM `$table` WHERE ip='$ip' LIMIT 1");
+        $queryvalid = $mysqli->query("SELECT * FROM `psec_bans` WHERE ip='$ip' LIMIT 1");
         $validator  = mysqli_num_rows($queryvalid);
         if ($validator > "0") {
             echo '<br />
@@ -72,7 +70,7 @@ if (isset($_POST['ban-ip'])) {
         </div>
 		';
         } else {
-            $query = $mysqli->query("INSERT INTO `$table` (`ip`, `date`, `time`, `reason`, `redirect`, `url`) VALUES ('$ip', '$date', '$time', '$reason', '$redirect', '$url')");
+            $query = $mysqli->query("INSERT INTO `psec_bans` (`ip`, `date`, `time`, `reason`, `redirect`, `url`) VALUES ('$ip', '$date', '$time', '$reason', '$redirect', '$url')");
         }
     }
 }
@@ -84,7 +82,6 @@ if (isset($_POST['ban-ip'])) {
 <?php
 if (isset($_GET['edit-id'])) {
     $id    = (int) $_GET["edit-id"];
-    $table = $prefix . 'bans';
     
     if (isset($_POST['edit-ban'])) {
         $ip       = $_POST['ip'];
@@ -105,11 +102,11 @@ if (isset($_GET['edit-id'])) {
         </div>
 		';
         } else {
-            $update = $mysqli->query("UPDATE `$table` SET ip='$ip', redirect='$redirect', url='$url', reason='$reason' WHERE id='$id'");
+            $update = $mysqli->query("UPDATE `psec_bans` SET ip='$ip', redirect='$redirect', url='$url', reason='$reason' WHERE id='$id'");
         }
     }
     
-    $result = $mysqli->query("SELECT * FROM `$table` WHERE id = '$id'");
+    $result = $mysqli->query("SELECT * FROM `psec_bans` WHERE id = '$id'");
     $row    = mysqli_fetch_assoc($result);
     if (empty($id)) {
         echo '<meta http-equiv="refresh" content="0; url=bans-ip.php">';
@@ -204,7 +201,7 @@ if (isset($_GET['edit-id'])) {
 						</div>
 						<div class="card-body">
 						
-<table id="dt-basic" class="table table-bordered table-hover table-sm">
+<table id="dt-basicbans" class="table table-bordered table-hover table-sm">
 									<thead class="<?php echo $thead; ?>">
 										<tr>
 						                  <th><i class="fas fa-user"></i> IP Address</th>
@@ -216,8 +213,7 @@ if (isset($_GET['edit-id'])) {
 									</thead>
 									<tbody>
 <?php
-$table = $prefix . 'bans';
-$query = $mysqli->query("SELECT * FROM `$table`");
+$query = $mysqli->query("SELECT * FROM `psec_bans`");
 while ($row = $query->fetch_assoc()) {
     echo '
 										<tr>
@@ -295,21 +291,6 @@ while ($row = $query->fetch_assoc()) {
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-$(document).ready(function() {
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-		"order": [[ 1, "desc" ]],
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>
 <?php
 footer();
 ?>

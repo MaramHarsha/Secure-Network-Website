@@ -1,11 +1,11 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_GET['id'])) {
     $id     = (int) $_GET["id"];
-    $table  = $prefix . 'live-traffic';
-    $result = $mysqli->query("SELECT * FROM `$table` WHERE id = '$id'");
+
+    $result = $mysqli->query("SELECT * FROM `psec_live-traffic` WHERE id = '$id'");
     $row    = mysqli_fetch_assoc($result);
     if (empty($id)) {
         echo '<meta http-equiv="refresh" content="0; url=live-traffic.php">';

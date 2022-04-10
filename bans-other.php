@@ -1,11 +1,11 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_GET['delete-id'])) {
     $id    = (int) $_GET["delete-id"];
-    $table = $prefix . 'bans-other';
-    $query = $mysqli->query("DELETE FROM `$table` WHERE id='$id'");
+
+    $query = $mysqli->query("DELETE FROM `psec_bans-other` WHERE id='$id'");
 }
 ?>
 <div class="content-wrapper">
@@ -36,11 +36,11 @@ if (isset($_GET['delete-id'])) {
                     
 <?php
 if (isset($_POST['block'])) {
-    $table = $prefix . "bans-other";
+
     $value = addslashes($_POST['value']);
     $type  = $_POST['type'];
     
-    $queryvalid = $mysqli->query("SELECT * FROM `$table` WHERE value='$value' and type='$type' LIMIT 1");
+    $queryvalid = $mysqli->query("SELECT * FROM `psec_bans-other` WHERE value='$value' and type='$type' LIMIT 1");
     $validator  = mysqli_num_rows($queryvalid);
     if ($validator > "0") {
         echo '<br />
@@ -49,8 +49,7 @@ if (isset($_POST['block'])) {
         </div>
     ';
     } else {
-        $table = $prefix . "bans-other";
-        $query = $mysqli->query("INSERT INTO `$table` (value, type) VALUES('$value', '$type')");
+        $query = $mysqli->query("INSERT INTO `psec_bans-other` (value, type) VALUES('$value', '$type')");
     }
 }
 ?>
@@ -100,8 +99,7 @@ if (isset($_POST['block'])) {
 									</thead>
 									<tbody>
 <?php
-$table = $prefix . 'bans-other';
-$query = $mysqli->query("SELECT * FROM `$table` WHERE type='isp'");
+$query = $mysqli->query("SELECT * FROM `psec_bans-other` WHERE type='isp'");
 while ($row = $query->fetch_assoc()) {
     echo '
 										<tr>
@@ -127,7 +125,7 @@ while ($row = $query->fetch_assoc()) {
 							<h3 class="card-title">Blocked <strong>Browsers</strong></h3>
 						</div>
 						<div class="card-body">
-<table id="dt-basic" class="table table-bordered table-hover table-sm">
+<table id="dt-basicphpconf" class="table table-bordered table-hover table-sm">
 									<thead class="<?php echo $thead; ?>">
 										<tr>
 						                  <th><i class="fas fa-globe"></i> Browser</th>
@@ -136,8 +134,7 @@ while ($row = $query->fetch_assoc()) {
 									</thead>
 									<tbody>
 <?php
-$table = $prefix . 'bans-other';
-$query = $mysqli->query("SELECT * FROM `$table` WHERE type='browser'");
+$query = $mysqli->query("SELECT * FROM `psec_bans-other` WHERE type='browser'");
 while ($row = $query->fetch_assoc()) {
     echo '
 										<tr>
@@ -170,8 +167,7 @@ while ($row = $query->fetch_assoc()) {
 									</thead>
 									<tbody>
 <?php
-$table = $prefix . 'bans-other';
-$query = $mysqli->query("SELECT * FROM `$table` WHERE type='os'");
+$query = $mysqli->query("SELECT * FROM `psec_bans-other` WHERE type='os'");
 while ($row = $query->fetch_assoc()) {
     echo '
 										<tr>
@@ -204,8 +200,7 @@ while ($row = $query->fetch_assoc()) {
 									</thead>
 									<tbody>
 <?php
-$table = $prefix . 'bans-other';
-$query = $mysqli->query("SELECT * FROM `$table` WHERE type='referrer'");
+$query = $mysqli->query("SELECT * FROM `psec_bans-other` WHERE type='referrer'");
 while ($row = $query->fetch_assoc()) {
     echo '
 										<tr>
@@ -233,49 +228,6 @@ while ($row = $query->fetch_assoc()) {
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-$(document).ready(function() {
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-    
-    $('#dt-basic2').dataTable( {
-		"responsive": true,
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-    
-    $('#dt-basic3').dataTable( {
-		"responsive": true,
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-	
-	$('#dt-basic4').dataTable( {
-		"responsive": true,
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>
 <?php
 footer();
 ?>

@@ -1,5 +1,5 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 ?>
 <div class="content-wrapper">
@@ -141,10 +141,10 @@ if (!empty($_POST['ip'])) {
         foreach ($dnsbl_lookup as $host) {
             echo '<tr><td>' . $host . '</td><td>' . $reverse_ip . '.' . $host . '</td>';
             if (@checkdnsrr($reverse_ip . "." . $host . ".", "A")) {
-                echo '<td><font class="badge badge-danger" style="font-size: 13px;"><i class="fas fa-times-circle"></i> Listed</font></td></tr>';
+                echo '<td><font class="badge badge-danger" class="font13"><i class="fas fa-times-circle"></i> Listed</font></td></tr>';
                 $BadCount++;
             } else {
-                echo '<td><font class="badge badge-success" style="font-size: 13px;"><i class="fas fa-check-circle"></i> Not Listed</font></td></tr>';
+                echo '<td><font class="badge badge-success" class="font13"><i class="fas fa-check-circle"></i> Not Listed</font></td></tr>';
             }
         }
         
@@ -171,20 +171,6 @@ if (!empty($_POST['ip'])) {
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-$(document).ready(function() {
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>
 <?php
 footer();
 ?>

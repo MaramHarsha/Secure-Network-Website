@@ -1,6 +1,6 @@
 <?php
 //Live Traffic
-if ($srow['live_traffic'] == 1) {
+if ($settings['live_traffic'] == 1) {
 	
     function code_to_country($code)
     {
@@ -261,10 +261,10 @@ if ($srow['live_traffic'] == 1) {
             return $countryList[$code];
     }
     
-	$cache_file = __DIR__ . "/cache/live-traffic/". $ip .".json";
+	$cache_file = __DIR__ . "/cache/live-traffic/". str_replace(":", "-", $ip) .".json";
 	
     //Get Country
-	if (psec_getcache($ip, $cache_file) == 'PSEC_NoCache') {
+	if (psec_getcache($cache_file) == 'PSEC_NoCache') {
 		$url = 'http://ip.nf/' . $ip . '.json';
 		$ch  = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -279,7 +279,7 @@ if ($srow['live_traffic'] == 1) {
         
         $ip_data = @json_decode($curl_response);
         if ($ip_data->ip->country_code != NULL) {
-            @$country_code = $ip_data->ip->country_code;
+            $country_code = $ip_data->ip->country_code;
         } else {
             $country_code = "XX";
         }
@@ -287,7 +287,7 @@ if ($srow['live_traffic'] == 1) {
 		// Grabs API Response and Caches
 		file_put_contents($cache_file, $country_code);
 	} else {
-		@$country_code = psec_getcache($ip, $cache_file);
+		@$country_code = psec_getcache($cache_file);
 	}
 
     $country     = code_to_country($country_code);
@@ -295,8 +295,7 @@ if ($srow['live_traffic'] == 1) {
     $uniquev     = 0;
     $request_uri = str_replace("'", '', $_SERVER['REQUEST_URI']);
     
-    $vtable  = $prefix . 'live-traffic';
-    $uvcheck = $mysqli->query("SELECT ip FROM `$vtable` WHERE ip='$ip' AND useragent='$useragent' AND date='$date' LIMIT 1");
+    $uvcheck = $mysqli->query("SELECT ip FROM `psec_live-traffic` WHERE ip='$ip' AND useragent='$useragent' AND date='$date' LIMIT 1");
     if ($uvcheck->num_rows <= 0) {
         $uniquev = 1;
     }
@@ -307,7 +306,7 @@ if ($srow['live_traffic'] == 1) {
     }
     
     // Get Device Type
-    require_once 'lib/Mobile_Detect.php';
+    require 'lib/Mobile_Detect.php';
     $detect = new Mobile_DetectPSec;
     
     if ($detect->isTablet()) {
@@ -321,9 +320,9 @@ if ($srow['live_traffic'] == 1) {
     $domain = trim($_SERVER['SERVER_NAME'], "www.");
     
     //Log Visit
-    $vischeck = $mysqli->query("SELECT ip FROM `$vtable` WHERE ip='$ip' AND useragent='$useragent' AND request_uri='$request_uri' AND date='$date' AND time='$time' LIMIT 1");
+    $vischeck = $mysqli->query("SELECT ip FROM `psec_live-traffic` WHERE ip='$ip' AND useragent='$useragent' AND request_uri='$request_uri' AND date='$date' AND time='$time' LIMIT 1");
     if ($vischeck->num_rows <= 0) {
-        $logvisit = $mysqli->query("INSERT INTO `$vtable` (`ip`, `useragent`, `browser`, `browser_code`, `os`, `os_code`, `country`, `country_code`, `device_type`, `request_uri`, `domain`, `referer`, `bot`, `date`, `time`, `uniquev`) VALUES ('$ip', '$useragent', '$browsersh', '$browser_code', '$ossh', '$os_code', '$country', '$country_code', '$device_type', '$request_uri', '$domain', '$referer', '$bot', '$date', '$time', '$uniquev')");
+        $logvisit = $mysqli->query("INSERT INTO `psec_live-traffic` (`ip`, `useragent`, `browser`, `browser_code`, `os`, `os_code`, `country`, `country_code`, `device_type`, `request_uri`, `domain`, `referer`, `bot`, `date`, `time`, `uniquev`) VALUES ('$ip', '$useragent', '$browsersh', '$browser_code', '$ossh', '$os_code', '$country', '$country_code', '$device_type', '$request_uri', '$domain', '$referer', '$bot', '$date', '$time', '$uniquev')");
     }
     
 }

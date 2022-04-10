@@ -1,5 +1,5 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_POST['update'])) {
@@ -21,48 +21,42 @@ if (isset($_POST['update'])) {
     
     $text9 = addslashes(htmlentities($_POST['text9']));
     
-    $text10 = addslashes(htmlentities($_POST['text10']));
-    
-    $table         = $prefix . 'pages-layolt';
-    $update_banned = $mysqli->query("UPDATE `$table` SET 
+    $update_banned = $mysqli->query("UPDATE `psec_pages-layolt` SET 
 `text` = '$text' 
 WHERE page='Banned'");
     
-    $update_blocked = $mysqli->query("UPDATE `$table` SET 
+    $update_blocked = $mysqli->query("UPDATE `psec_pages-layolt` SET 
 `text` = '$text2' 
 WHERE page='Blocked'");
     
-    $update_proxy = $mysqli->query("UPDATE `$table` SET 
+    $update_proxy = $mysqli->query("UPDATE `psec_pages-layolt` SET 
 `text` = '$text3' 
 WHERE page='Proxy'");
     
-    $update_spam = $mysqli->query("UPDATE `$table` SET 
+    $update_spam = $mysqli->query("UPDATE `psec_pages-layolt` SET 
 `text` = '$text4' 
 WHERE page='Spam'");
     
-    $update_bannedc = $mysqli->query("UPDATE `$table` SET 
+    $update_bannedc = $mysqli->query("UPDATE `psec_pages-layolt` SET 
 `text` = '$text5' 
 WHERE page='Banned_Country'");
     
-    $update_blockedbr = $mysqli->query("UPDATE `$table` SET 
+    $update_blockedbr = $mysqli->query("UPDATE `psec_pages-layolt` SET 
 `text` = '$text6' 
 WHERE page='Blocked_Browser'");
     
-    $update_blockedos = $mysqli->query("UPDATE `$table` SET 
+    $update_blockedos = $mysqli->query("UPDATE `psec_pages-layolt` SET 
 `text` = '$text7' 
 WHERE page='Blocked_OS'");
     
-    $update_blockedisp = $mysqli->query("UPDATE `$table` SET 
+    $update_blockedisp = $mysqli->query("UPDATE `psec_pages-layolt` SET 
 `text` = '$text8' 
 WHERE page='Blocked_ISP'");
     
-    $update_blockedrfr = $mysqli->query("UPDATE `$table` SET 
+    $update_blockedrfr = $mysqli->query("UPDATE `psec_pages-layolt` SET 
 `text` = '$text9' 
 WHERE page='Blocked_RFR'");
     
-    $update_adblocker = $mysqli->query("UPDATE `$table` SET 
-`text` = '$text10' 
-WHERE page='AdBLocker'");
 }
 ?>
 <div class="content-wrapper">
@@ -108,15 +102,13 @@ WHERE page='AdBLocker'");
 									<a class="nav-link" data-toggle="pill" role="tab" href="#bannedos-layout" aria-selected="false"><i class="fas fa-tablet"></i> Blocked OS</a>
 									<a class="nav-link" data-toggle="pill" role="tab" href="#bannedisp-layout" aria-selected="false"><i class="fas fa-wifi"></i> Blocked ISP</a>
 									<a class="nav-link" data-toggle="pill" role="tab" href="#bannedrfr-layout" aria-selected="false"><i class="fas fa-link"></i> Blocked Referrer</a>
-									<a class="nav-link" data-toggle="pill" role="tab" href="#adblocker-layout" aria-selected="false"><i class="fas fa-window-maximize"></i> AdBlocker</a>
 								</div>				
 								</div>
 							    <div class="col-md-9">
 								<form action="" method="post">
 								<div class="tab-content">
 <?php
-$table = $prefix . 'pages-layolt';
-$sql   = $mysqli->query("SELECT * FROM `$table` WHERE page='Blocked'");
+$sql   = $mysqli->query("SELECT * FROM `psec_pages-layolt` WHERE page='Blocked'");
 $row   = mysqli_fetch_assoc($sql);
 ?>
 									<div id="sqli-layout" class="tab-pane fade active show">
@@ -131,8 +123,7 @@ echo $row['text'];
 									</div>
 
 <?php
-$table = $prefix . 'pages-layolt';
-$sql   = $mysqli->query("SELECT * FROM `$table` WHERE page='Proxy'");
+$sql   = $mysqli->query("SELECT * FROM `psec_pages-layolt` WHERE page='Proxy'");
 $row   = mysqli_fetch_assoc($sql);
 ?>
 									<div id="proxy-layout" class="tab-pane fade">
@@ -147,8 +138,7 @@ echo $row['text'];
 									</div>
                                     
 <?php
-$table = $prefix . 'pages-layolt';
-$sql   = $mysqli->query("SELECT * FROM `$table` WHERE page='Spam'");
+$sql   = $mysqli->query("SELECT * FROM `psec_pages-layolt` WHERE page='Spam'");
 $row   = mysqli_fetch_assoc($sql);
 ?>
                                     <div id="spam-layout" class="tab-pane fade">
@@ -163,8 +153,7 @@ echo $row['text'];
 									</div>
                                     
 <?php
-$table = $prefix . 'pages-layolt';
-$sql   = $mysqli->query("SELECT * FROM `$table` WHERE page='Banned'");
+$sql   = $mysqli->query("SELECT * FROM `psec_pages-layolt` WHERE page='Banned'");
 $row   = mysqli_fetch_assoc($sql);
 ?>
 									<div id="banned-layout" class="tab-pane fade">
@@ -179,8 +168,7 @@ echo $row['text'];
 									</div>
                                     
 <?php
-$table = $prefix . 'pages-layolt';
-$sql   = $mysqli->query("SELECT * FROM `$table` WHERE page='Banned_Country'");
+$sql   = $mysqli->query("SELECT * FROM `psec_pages-layolt` WHERE page='Banned_Country'");
 $row   = mysqli_fetch_assoc($sql);
 ?>
 									<div id="bannedc-layout" class="tab-pane fade">
@@ -195,8 +183,7 @@ echo $row['text'];
 									</div>
                                     
 <?php
-$table = $prefix . 'pages-layolt';
-$sql   = $mysqli->query("SELECT * FROM `$table` WHERE page='Blocked_Browser'");
+$sql   = $mysqli->query("SELECT * FROM `psec_pages-layolt` WHERE page='Blocked_Browser'");
 $row   = mysqli_fetch_assoc($sql);
 ?>
 									<div id="bannedbr-layout" class="tab-pane fade">
@@ -211,8 +198,7 @@ echo $row['text'];
 									</div>
                                     
 <?php
-$table = $prefix . 'pages-layolt';
-$sql   = $mysqli->query("SELECT * FROM `$table` WHERE page='Blocked_OS'");
+$sql   = $mysqli->query("SELECT * FROM `psec_pages-layolt` WHERE page='Blocked_OS'");
 $row   = mysqli_fetch_assoc($sql);
 ?>
 									<div id="bannedos-layout" class="tab-pane fade">
@@ -227,8 +213,7 @@ echo $row['text'];
 									</div>
                                     
 <?php
-$table = $prefix . 'pages-layolt';
-$sql   = $mysqli->query("SELECT * FROM `$table` WHERE page='Blocked_ISP'");
+$sql   = $mysqli->query("SELECT * FROM `psec_pages-layolt` WHERE page='Blocked_ISP'");
 $row   = mysqli_fetch_assoc($sql);
 ?>
 									<div id="bannedisp-layout" class="tab-pane fade">
@@ -243,8 +228,7 @@ echo $row['text'];
 									</div>
 
 <?php
-$table = $prefix . 'pages-layolt';
-$sql   = $mysqli->query("SELECT * FROM `$table` WHERE page='Blocked_RFR'");
+$sql   = $mysqli->query("SELECT * FROM `psec_pages-layolt` WHERE page='Blocked_RFR'");
 $row   = mysqli_fetch_assoc($sql);
 ?>
 									<div id="bannedrfr-layout" class="tab-pane fade">
@@ -252,22 +236,6 @@ $row   = mysqli_fetch_assoc($sql);
 	        <center>
             <label><i class="fas fa-file-alt"></i> Page Text:</label>
 	        <textarea name="text9" class="form-control" rows="5" type="text" required><?php
-echo $row['text'];
-?></textarea>
-			</center>
-</fieldset>
-									</div>
-
-<?php
-$table = $prefix . 'pages-layolt';
-$sql   = $mysqli->query("SELECT * FROM `$table` WHERE page='AdBlocker'");
-$row   = mysqli_fetch_assoc($sql);
-?>
-									<div id="adblocker-layout" class="tab-pane fade">
-<fieldset>
-	        <center>
-            <label><i class="fas fa-file-alt"></i> Page Text:</label>
-	        <textarea name="text10" class="form-control" rows="5" type="text" required><?php
 echo $row['text'];
 ?></textarea>
 			</center>

@@ -1,53 +1,51 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_POST['save2'])) {
-    $table = $prefix . 'badbot-settings';
-    
+
     if (isset($_POST['protection'])) {
-        $protection = 1;
+        $settings['badbot_protection'] = 1;
     } else {
-        $protection = 0;
+        $settings['badbot_protection'] = 0;
     }
     
     if (isset($_POST['protection2'])) {
-        $protection2 = 1;
+        $settings['badbot_protection2'] = 1;
     } else {
-        $protection2 = 0;
+        $settings['badbot_protection2'] = 0;
     }
     
     if (isset($_POST['protection3'])) {
-        $protection3 = 1;
+        $settings['badbot_protection3'] = 1;
     } else {
-        $protection3 = 0;
+        $settings['badbot_protection3'] = 0;
     }
-    
-    $query = $mysqli->query("UPDATE `$table` SET protection='$protection', protection2='$protection2', protection3='$protection3' WHERE id=1");
+
+	file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
 }
 
 if (isset($_POST['save'])) {
-    $table = $prefix . 'badbot-settings';
-    
+
     if (isset($_POST['logging'])) {
-        $logging = 1;
+        $settings['badbot_logging'] = 1;
     } else {
-        $logging = 0;
+        $settings['badbot_logging'] = 0;
     }
     
     if (isset($_POST['autoban'])) {
-        $autoban = 1;
+        $settings['badbot_autoban'] = 1;
     } else {
-        $autoban = 0;
+        $settings['badbot_autoban'] = 0;
     }
     
     if (isset($_POST['mail'])) {
-        $mail = 1;
+        $settings['badbot_mail'] = 1;
     } else {
-        $mail = 0;
+        $settings['badbot_mail'] = 0;
     }
-    
-    $query = $mysqli->query("UPDATE `$table` SET logging='$logging', autoban='$autoban', mail='$mail' WHERE id=1");
+
+    file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
 }
 ?>
 <div class="content-wrapper">
@@ -80,10 +78,7 @@ if (isset($_POST['save'])) {
 				<div class="col-md-8">
                     	    
 <?php
-$table = $prefix . 'badbot-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = mysqli_fetch_array($query);
-if ($row['protection'] == 1 OR $row['protection2'] == 1 OR $row['protection3'] == 1) {
+if ($settings['badbot_protection'] == 1 OR $settings['badbot_protection2'] == 1 OR $settings['badbot_protection3'] == 1) {
     echo '
               <div class="card card-solid card-success">
 ';
@@ -98,14 +93,14 @@ if ($row['protection'] == 1 OR $row['protection2'] == 1 OR $row['protection3'] =
 						</div>
 						<div class="card-body">
 <?php
-if ($row['protection'] == 1 OR $row['protection2'] == 1 OR $row['protection3'] == 1) {
+if ($settings['badbot_protection'] == 1 OR $settings['badbot_protection2'] == 1 OR $settings['badbot_protection3'] == 1) {
     echo '
-        <h1 style="color: #47A447;"><i class="fas fa-check-circle"></i> Enabled</h1>
+        <h1 class="pm_enabled"><i class="fas fa-check-circle"></i> Enabled</h1>
         <p>The website is protected from <strong>Bad Bots</strong></p>
 ';
 } else {
     echo '
-        <h1 style="color: #d2322d;"><i class="fas fa-times-circle"></i> Disabled</h1>
+        <h1 class="pm_disabled"><i class="fas fa-times-circle"></i> Disabled</h1>
         <p>The website is not protected from <strong>Bad Bots</strong></p>
 ';
 }
@@ -128,7 +123,7 @@ if ($row['protection'] == 1 OR $row['protection2'] == 1 OR $row['protection3'] =
                                         <br /><br />
                                         
 											<input type="checkbox" name="protection" class="psec-switch" <?php
-if ($row['protection'] == 1) {
+if ($settings['badbot_protection'] == 1) {
     echo 'checked="checked"';
 }
 ?> />
@@ -143,7 +138,7 @@ if ($row['protection'] == 1) {
                                         <br /><br />
                                         
 											<input type="checkbox" name="protection2" class="psec-switch" <?php
-if ($row['protection2'] == 1) {
+if ($settings['badbot_protection2'] == 1) {
     echo 'checked="checked"';
 }
 ?> />
@@ -158,7 +153,7 @@ if ($row['protection2'] == 1) {
                                         <br /><br />
                                         
 											<input type="checkbox" name="protection3" class="psec-switch" <?php
-if ($row['protection3'] == 1) {
+if ($settings['badbot_protection3'] == 1) {
     echo 'checked="checked"';
 }
 ?> />
@@ -193,7 +188,7 @@ if ($row['protection3'] == 1) {
 										<li class="list-group-item">
 											<p>Logging</p>
 												<input type="checkbox" name="logging" class="psec-switch" <?php
-if ($row['logging'] == 1) {
+if ($settings['badbot_logging'] == 1) {
     echo 'checked="checked"';
 }
 ?> /><br />
@@ -202,7 +197,7 @@ if ($row['logging'] == 1) {
 										<li class="list-group-item">
 											<p>AutoBan</p>
 												<input type="checkbox" name="autoban" class="psec-switch" <?php
-if ($row['autoban'] == 1) {
+if ($settings['badbot_autoban'] == 1) {
     echo 'checked="checked"';
 }
 ?> /><br />
@@ -211,7 +206,7 @@ if ($row['autoban'] == 1) {
                                         <li class="list-group-item">
 											<p>Mail Notifications</p>
 												<input type="checkbox" name="mail" class="psec-switch" <?php
-if ($row['mail'] == 1) {
+if ($settings['badbot_mail'] == 1) {
     echo 'checked="checked"';
 }
 ?> /><br />
@@ -237,13 +232,6 @@ if ($row['mail'] == 1) {
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-var elems = Array.prototype.slice.call(document.querySelectorAll('.psec-switch'));
-
-elems.forEach(function(html) {
-  var switchery = new Switchery(html, {secondaryColor: 'red'});
-});
-</script>
 <?php
 footer();
 ?>

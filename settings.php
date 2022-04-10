@@ -1,34 +1,36 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_POST['save'])) {
-    $table = $prefix . 'settings';
     
-    $email = $_POST['email'];
+    $settings['email'] = $_POST['email'];
     
     if (isset($_POST['project_security'])) {
-        $project_security = 1;
+        $settings['project_security'] = 1;
     } else {
-        $project_security = 0;
+        $settings['project_security'] = 0;
     }
     
     if (isset($_POST['mail_notifications'])) {
-        $mail_notifications = 1;
+        $settings['mail_notifications'] = 1;
     } else {
-        $mail_notifications = 0;
+        $settings['mail_notifications'] = 0;
+    }
+    
+    if (isset($_POST['test_integration'])) {
+        $settings['test_integration'] = 1;
+    } else {
+        $settings['test_integration'] = 0;
     }
 	
 	if (isset($_POST['dark_mode'])) {
-        $dark_mode = 1;
+        $settings['dark_mode'] = 1;
     } else {
-        $dark_mode = 0;
+        $settings['dark_mode'] = 0;
     }
     
-    $query = $mysqli->query("UPDATE `$table` SET email='$email', project_security='$project_security', mail_notifications='$mail_notifications', dark_mode='$dark_mode' WHERE id=1");
-
-	echo '<meta http-equiv="refresh" content="0; url=settings.php" />';
-	
+	file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
 }
 ?>
 <div class="content-wrapper">
@@ -67,11 +69,6 @@ if (isset($_POST['save'])) {
 							<h3 class="card-title"><i class="fas fa-cog"></i> Settings</h3>
 						</div>
 						<div class="card-body mx-auto">
-<?php
-$table = $prefix . 'settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = mysqli_fetch_array($query);
-?>
 							<div class="form-group row">
 								<label class="control-label" for="inputDefault">E-Mail Address:</label>
 												
@@ -80,7 +77,7 @@ $row   = mysqli_fetch_array($query);
                 						<span class="input-group-text"><i class="fa fa-envelope"></i></span>
                 					</div>
 									<input type="email" class="form-control" name="email" value="<?php
-echo $row['email'];
+echo $settings['email'];
 ?>" required>
                 				</div>
                                 <p><br />The E-Mail Address is used for receiving <b>Mail Notifications</b> and for the <b>Contact Button (Warning Pages)</b>.</p>
@@ -88,7 +85,7 @@ echo $row['email'];
                             <div class="form-group">
 								<label class="control-label">Project SECURITY</label><br />
 								<input type="checkbox" name="project_security" class="psec-switch" <?php
-if ($row['project_security'] == 1) {
+if ($settings['project_security'] == 1) {
     echo 'checked';
 }
 ?> />
@@ -96,25 +93,34 @@ if ($row['project_security'] == 1) {
                             </div><hr /><br />
                             <div class="form-group">
 								<label class="control-label">Mail Notifications</label><br />
-									<input type="checkbox" name="mail_notifications" class="psec-switch" <?php
-if ($row['mail_notifications'] == 1) {
+                                <input type="checkbox" name="mail_notifications" class="psec-switch" <?php
+if ($settings['mail_notifications'] == 1) {
     echo 'checked';
 }
 ?> />
 									</br> If this option is <strong>Enabled</strong> you will receive notifications on your E-Mail Address.<br />
                             </div><hr /><br />
-							<div class="form-group">
-                                <label class="control-label">Dark Mode Theme</label><br />
-								<input type="checkbox" name="dark_mode" class="psec-switch" <?php
-if ($row['dark_mode'] == 1) {
+                            <div class="form-group">
+								<label class="control-label">Test Integration</label><br />
+                                <input type="checkbox" name="test_integration" class="psec-switch" <?php
+if ($settings['test_integration'] == 1) {
     echo 'checked';
 }
 ?> />
-								<br />(<b>Disabled</b> / <b>Enabled</b>)<br /><br />
-								Dark mode theme can reduce eyestrain and can save battery on devices with OLED screens.<br />
+									</br> Check if your website is correctly integrated with Project SECURITY.<br />
+                                    Message will be displayed on your website if this option is <strong>Enabled</strong> and if <strong>Integration is correct</strong>.<br />
+                            </div><hr /><br />
+							<div class="form-group">
+                                <label class="control-label">Dark Mode Theme</label><br />
+								<input type="checkbox" name="dark_mode" class="psec-switch" <?php
+if ($settings['dark_mode'] == 1) {
+    echo 'checked';
+}
+?> />
+								<br /> Dark mode theme can reduce eyestrain and can save battery on devices with OLED screens.
 							</div>
 						</div>
-                        <div class="card-footer text-left">
+                        <div class="card-footer">
 							<button class="btn btn-block btn-flat btn-primary" name="save" type="submit"><i class="fas fa-save"></i> Save</button>
 						</div>
                      </div>
@@ -132,13 +138,6 @@ if ($row['dark_mode'] == 1) {
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-var elems = Array.prototype.slice.call(document.querySelectorAll('.psec-switch'));
-
-elems.forEach(function(html) {
-  var switchery = new Switchery(html, {secondaryColor: 'red'});
-});
-</script>
 <?php
 footer();
 ?>

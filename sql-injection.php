@@ -1,85 +1,83 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_POST['save2'])) {
-    $table = $prefix . 'sqli-settings';
-    
+
     if (isset($_POST['protection2'])) {
-        $protection2 = 1;
+        $settings['sqli_protection2'] = 1;
     } else {
-        $protection2 = 0;
+        $settings['sqli_protection2'] = 0;
     }
     
     if (isset($_POST['protection3'])) {
-        $protection3 = 1;
+        $settings['sqli_protection3'] = 1;
     } else {
-        $protection3 = 0;
+        $settings['sqli_protection3'] = 0;
     }
     
     if (isset($_POST['protection4'])) {
-        $protection4 = 1;
+        $settings['sqli_protection4'] = 1;
     } else {
-        $protection4 = 0;
+        $settings['sqli_protection4'] = 0;
     }
     
     if (isset($_POST['protection5'])) {
-        $protection5 = 1;
+        $settings['sqli_protection5'] = 1;
     } else {
-        $protection5 = 0;
+        $settings['sqli_protection5'] = 0;
     }
     
     if (isset($_POST['protection6'])) {
-        $protection6 = 1;
+        $settings['sqli_protection6'] = 1;
     } else {
-        $protection6 = 0;
+        $settings['sqli_protection6'] = 0;
     }
     
     if (isset($_POST['protection7'])) {
-        $protection7 = 1;
+        $settings['sqli_protection7'] = 1;
     } else {
-        $protection7 = 0;
+        $settings['sqli_protection7'] = 0;
     }
 	
 	if (isset($_POST['protection8'])) {
-        $protection8 = 1;
+        $settings['sqli_protection8'] = 1;
     } else {
-        $protection8 = 0;
+        $settings['sqli_protection8'] = 0;
     }
     
-    $query = $mysqli->query("UPDATE `$table` SET protection2='$protection2', protection3='$protection3', protection4='$protection4', protection5='$protection5', protection5='$protection5', protection6='$protection6', protection7='$protection7', protection8='$protection8' WHERE id=1");
+    file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
 }
 
 if (isset($_POST['save'])) {
-    $table = $prefix . 'sqli-settings';
     
     if (isset($_POST['protection'])) {
-        $protection = 1;
+        $settings['sqli_protection'] = 1;
     } else {
-        $protection = 0;
+        $settings['sqli_protection'] = 0;
     }
     
     if (isset($_POST['logging'])) {
-        $logging = 1;
+        $settings['sqli_logging'] = 1;
     } else {
-        $logging = 0;
+        $settings['sqli_logging'] = 0;
     }
     
     if (isset($_POST['autoban'])) {
-        $autoban = 1;
+        $settings['sqli_autoban'] = 1;
     } else {
-        $autoban = 0;
+        $settings['sqli_autoban'] = 0;
     }
     
     if (isset($_POST['mail'])) {
-        $mail = 1;
+        $settings['sqli_mail'] = 1;
     } else {
-        $mail = 0;
+        $settings['sqli_mail'] = 0;
     }
     
-    $redirect = $_POST['redirect'];
+    $settings['sqli_redirect'] = $_POST['redirect'];
     
-    $query = $mysqli->query("UPDATE `$table` SET protection='$protection', logging='$logging', autoban='$autoban', mail='$mail', redirect='$redirect' WHERE id=1");
+    file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
 }
 ?>
 <div class="content-wrapper">
@@ -112,10 +110,7 @@ if (isset($_POST['save'])) {
 				<div class="col-md-8">
                     	    
 <?php
-$table = $prefix . 'sqli-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = mysqli_fetch_array($query);
-if ($row['protection'] == 1) {
+if ($settings['sqli_protection'] == 1) {
     echo '
               <div class="card card-solid card-success">
 ';
@@ -130,14 +125,14 @@ if ($row['protection'] == 1) {
 						</div>
 						<div class="card-body">
 <?php
-if ($row['protection'] == 1) {
+if ($settings['sqli_protection'] == 1) {
     echo '
-        <h1 style="color: #47A447;"><i class="fas fa-check-circle"></i> Enabled</h1>
+        <h1 class="pm_enabled"><i class="fas fa-check-circle"></i> Enabled</h1>
         <p>The website is protected from <strong>SQL Injection Attacks (SQLi)</strong></p>
 ';
 } else {
     echo '
-        <h1 style="color: #d2322d;"><i class="fas fa-times-circle"></i> Disabled</h1>
+        <h1 class="pm_disabled"><i class="fas fa-times-circle"></i> Disabled</h1>
         <p>The website is not protected from <strong>SQL Injection Attacks (SQLi)</strong></p>
 ';
 }
@@ -161,7 +156,7 @@ if ($row['protection'] == 1) {
                                         <br /><br /><br />
                                         
 											<input type="checkbox" name="protection2" class="psec-switch" <?php
-if ($row['protection2'] == 1) {
+if ($settings['sqli_protection2'] == 1) {
     echo 'checked="checked"';
 }
 ?> />
@@ -176,7 +171,7 @@ if ($row['protection2'] == 1) {
                                         <br /><br />
                                         
 											<input type="checkbox" name="protection3" class="psec-switch" <?php
-if ($row['protection3'] == 1) {
+if ($settings['sqli_protection3'] == 1) {
     echo 'checked="checked"';
 }
 ?> />
@@ -191,7 +186,7 @@ if ($row['protection3'] == 1) {
                                         <br /><br />
                                         
 											<input type="checkbox" name="protection6" class="psec-switch" <?php
-if ($row['protection6'] == 1) {
+if ($settings['sqli_protection6'] == 1) {
     echo 'checked="checked"';
 }
 ?> />
@@ -208,7 +203,7 @@ if ($row['protection6'] == 1) {
                                         <br /><br />
                                         
 											<input type="checkbox" name="protection4" class="psec-switch" <?php
-if ($row['protection4'] == 1) {
+if ($settings['sqli_protection4'] == 1) {
     echo 'checked="checked"';
 }
 ?> />
@@ -223,7 +218,7 @@ if ($row['protection4'] == 1) {
                                         <br /><br /><br />
                                         
 											<input type="checkbox" name="protection5" class="psec-switch" <?php
-if ($row['protection5'] == 1) {
+if ($settings['sqli_protection5'] == 1) {
     echo 'checked="checked"';
 }
 ?> />
@@ -240,7 +235,7 @@ if ($row['protection5'] == 1) {
                                         <br /><br />
                                         
 											<input type="checkbox" name="protection7" class="psec-switch" <?php
-if ($row['protection7'] == 1) {
+if ($settings['sqli_protection7'] == 1) {
     echo 'checked="checked"';
 }
 ?> />
@@ -255,7 +250,7 @@ if ($row['protection7'] == 1) {
                                         <br /><br />
                                         
 											<input type="checkbox" name="protection8" class="psec-switch" <?php
-if ($row['protection8'] == 1) {
+if ($settings['sqli_protection8'] == 1) {
     echo 'checked="checked"';
 }
 ?> />
@@ -289,7 +284,7 @@ if ($row['protection8'] == 1) {
 										<li class="list-group-item">
 											<p>Protection</p>
 														<input type="checkbox" name="protection" class="psec-switch" <?php
-if ($row['protection'] == 1) {
+if ($settings['sqli_protection'] == 1) {
     echo 'checked="checked"';
 }
 ?> /><br />
@@ -298,7 +293,7 @@ if ($row['protection'] == 1) {
 										<li class="list-group-item">
 											<p>Logging</p>
 														<input type="checkbox" name="logging" class="psec-switch" <?php
-if ($row['logging'] == 1) {
+if ($settings['sqli_logging'] == 1) {
     echo 'checked="checked"';
 }
 ?> /><br />
@@ -307,7 +302,7 @@ if ($row['logging'] == 1) {
 										<li class="list-group-item">
 											<p>AutoBan</p>
 														<input type="checkbox" name="autoban" class="psec-switch" <?php
-if ($row['autoban'] == 1) {
+if ($settings['sqli_autoban'] == 1) {
     echo 'checked="checked"';
 }
 ?> /><br />
@@ -316,7 +311,7 @@ if ($row['autoban'] == 1) {
                                         <li class="list-group-item">
 											<p>Mail Notifications</p>
 														<input type="checkbox" name="mail" class="psec-switch" <?php
-if ($row['mail'] == 1) {
+if ($settings['sqli_mail'] == 1) {
     echo 'checked="checked"';
 }
 ?> /><br />
@@ -325,7 +320,7 @@ if ($row['mail'] == 1) {
                                         <li class="list-group-item">
 											<p>Redirect URL</p>
 											<input name="redirect" class="form-control" type="text" value="<?php
-echo $row['redirect'];
+echo $settings['sqli_redirect'];
 ?>" required>
 										</li>
 									</ul>
@@ -348,13 +343,6 @@ echo $row['redirect'];
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-var elems = Array.prototype.slice.call(document.querySelectorAll('.psec-switch'));
-
-elems.forEach(function(html) {
-  var switchery = new Switchery(html, {secondaryColor: 'red'});
-});
-</script>
 <?php
 footer();
 ?>

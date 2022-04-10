@@ -1,10 +1,6 @@
 <?php
 //Bad Bots Protection
-$table = $prefix . 'badbot-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-
-if ($row['protection'] == 1) {
+if ($settings['badbot_protection'] == 1) {
     
     $bad_bots = array(
         "Abonti",
@@ -340,7 +336,6 @@ if ($row['protection'] == 1) {
         "andit",
         "anon",
         "ansearch",
-        "answer",
         "answerbus",
         "answerchase",
         "antivirx",
@@ -351,7 +346,6 @@ if ($row['protection'] == 1) {
         "asps",
         "atari",
         "atlocal",
-        "atom",
         "atrax",
         "atrop",
         "attrib",
@@ -395,7 +389,6 @@ if ($row['protection'] == 1) {
         "botje",
         "botw",
         "bpimage",
-        "brand",
         "brok",
         "broth",
         "browseabit",
@@ -408,7 +401,6 @@ if ($row['protection'] == 1) {
         "bumble",
         "bunny",
         "busca",
-        "busi",
         "buy",
         "bwh3",
         "cafek",
@@ -548,7 +540,6 @@ if ($row['protection'] == 1) {
         "flam",
         "flash",
         "flexum",
-        "flip",
         "fly",
         "fooky",
         "forum",
@@ -558,7 +549,6 @@ if ($row['protection'] == 1) {
         "foun",
         "fount",
         "foxy1;",
-        "free",
         "friend",
         "fuck",
         "fuer",
@@ -935,7 +925,6 @@ if ($row['protection'] == 1) {
         "snag",
         "snapbot",
         "snif",
-        "snip",
         "snoop",
         "sock",
         "socsci",
@@ -958,7 +947,6 @@ if ($row['protection'] == 1) {
         "stamp",
         "statbot",
         "state",
-        "steel",
         "stilo",
         "strateg",
         "stress",
@@ -1299,7 +1287,6 @@ if ($row['protection'] == 1) {
         "Pooodle_predictor",
         "Popdexter",
         "Port_Huron_Labs",
-        "process",
         "psbot test for robots.txt",
         "psycheclone",
         "PyQuery",
@@ -1459,7 +1446,6 @@ if ($row['protection'] == 1) {
         "Blogshares.Spiders",
         "Bloodhound",
         "bmclient",
-        "Board",
         "BOI",
         "boitho",
         "Bookmark.search.tool",
@@ -1492,7 +1478,6 @@ if ($row['protection'] == 1) {
         "DynaWeb",
         "e-collector",
         "EBM-APPLE",
-        "EBrowse",
         "ecollector",
         "edgeio",
         "efp@gmx.net",
@@ -1571,7 +1556,6 @@ if ($row['protection'] == 1) {
         "libwhisker",
         "libwww-FM",
         "LightningDownload",
-        "Link",
         "Link.Sleuth",
         "Linkie",
         "LINKS.ARoMATIZED",
@@ -1810,21 +1794,21 @@ if ($row['protection'] == 1) {
             $type = "Bad Bot";
             
             //Logging
-            if ($row['logging'] == 1) {
-                psec_logging($mysqli, $prefix, $type);
+            if ($settings['badbot_logging'] == 1) {
+                psec_logging($mysqli, $type);
             }
             
             //AutoBan
-            if ($row['autoban'] == 1) {
-                psec_autoban($mysqli, $prefix, $type);
+            if ($settings['badbot_autoban'] == 1) {
+                psec_autoban($mysqli, $type);
             }
             
             //E-Mail Notification
-            if ($srow['mail_notifications'] == 1 && $row['mail'] == 1) {
-                psec_mail($mysqli, $prefix, $site_url, $projectsecurity_path, $type);
+            if ($settings['mail_notifications'] == 1 && $settings['badbot_mail'] == 1) {
+                psec_mail($mysqli, $type);
             }
-            
-            echo '<meta http-equiv="refresh" content="0;url=' . $projectsecurity_path . '/pages/badbot-detected.php" />';
+			
+            echo '<meta http-equiv="refresh" content="0;url=' . $settings['projectsecurity_path'] . '/pages/badbot-detected.php" />';
             exit;
         }
     }

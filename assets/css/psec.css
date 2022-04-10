@@ -1,0 +1,100 @@
+.scroll-btn {
+	height: 40px;
+	width: 40px;
+	border: 2px solid #000;
+	border-radius: 10%;
+	background-color: #000;
+	position: fixed;
+	bottom: 25px;
+	right: 20px;
+	opacity: 0.8;
+	z-index: 9999;
+	cursor: pointer;
+	display: none;
+}
+
+.scroll-btn .scroll-btn-arrow {
+	height: 12px;
+	width: 12px;
+	border: 3px solid;
+	border-right: none;
+	border-top: none;
+	margin: 15px 12px;
+	-webkit-transform: rotate(135deg);
+	-moz-transform: rotate(135deg);
+	-ms-transform: rotate(135deg);
+	-o-transform: rotate(135deg);
+	transform: rotate(135deg);
+	color: white;
+}
+
+.notouch .scroll-btn:hover { opacity: 0.8 }
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
+	.scroll-btn {
+		bottom: 8px;
+		right: 8px;
+	}
+}
+
+a:link {
+      text-decoration: none;
+    }
+
+a:visited {
+    text-decoration: none;
+}
+
+.pm_enabled {
+	color: #47A447;
+}
+
+.pm_disabledblue {
+	color: #007bff;
+}
+
+.pm_disabled {
+	color: #d2322d;
+}
+
+.width100 {
+	width: 100%;
+}
+
+.font13 {
+	font-size: 13px;
+}
+
+.font14 {
+	font-size: 14px;
+}
+
+.font20 {
+	font-size: 20px;
+}
+
+.font35 {
+	font-size: 35px;
+}
+
+.height_auto {
+	height: auto;
+}
+
+.margin_auto {
+	height: auto;
+}
+
+.marg_bottom {
+	margin-bottom: 0;
+}
+
+.map_div {
+	width: 99%; 
+	height: 450px;
+}
+
+.wpage_head {
+	background-color: #d9534f; 
+	color: white;
+}

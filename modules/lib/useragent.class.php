@@ -85,7 +85,7 @@ class UserAgentPSec
     {
         $filePath = dirname(__file__) . '/' . $className . '.php';
         if (is_file($filePath)) {
-            require_once $filePath;
+            require $filePath;
         }
     }
     

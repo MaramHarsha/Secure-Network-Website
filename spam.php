@@ -1,54 +1,47 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_POST['add-database'])) {
-    $table      = $prefix . 'dnsbl-databases';
     $database   = $_POST['database'];
-    $queryvalid = $mysqli->query("SELECT * FROM `$table` WHERE `database`='$database' LIMIT 1");
+	
+    $queryvalid = $mysqli->query("SELECT * FROM `psec_dnsbl-databases` WHERE `database`='$database' LIMIT 1");
     $validator  = mysqli_num_rows($queryvalid);
     if ($validator > "0") {
     } else {
-        $query = $mysqli->query("INSERT INTO `$table` (`database`) VALUES ('$database')");
+        $query = $mysqli->query("INSERT INTO `psec_dnsbl-databases` (`database`) VALUES ('$database')");
     }
 }
 
 if (isset($_GET['delete-id'])) {
     $id    = (int) $_GET["delete-id"];
-    $table = $prefix . 'dnsbl-databases';
-    $query = $mysqli->query("DELETE FROM `$table` WHERE id='$id'");
+
+    $query = $mysqli->query("DELETE FROM `psec_dnsbl-databases` WHERE id='$id'");
 }
 
 if (isset($_POST['save'])) {
-    $table = $prefix . 'spam-settings';
-    
+
     if (isset($_POST['protection'])) {
-        $protection = 1;
+        $settings['spam_protection'] = 1;
     } else {
-        $protection = 0;
+        $settings['spam_protection'] = 0;
     }
     
     if (isset($_POST['logging'])) {
-        $logging = 1;
+        $settings['spam_logging'] = 1;
     } else {
-        $logging = 0;
-    }
-    
-    if (isset($_POST['autoban'])) {
-        $autoban = 1;
-    } else {
-        $autoban = 0;
+        $settings['spam_logging'] = 0;
     }
     
     if (isset($_POST['mail'])) {
-        $mail = 1;
+        $settings['spam_mail'] = 1;
     } else {
-        $mail = 0;
+        $settings['spam_mail'] = 0;
     }
     
-    $redirect = $_POST['redirect'];
+    $settings['spam_redirect'] = $_POST['redirect'];
     
-    $query = $mysqli->query("UPDATE `$table` SET protection='$protection', logging='$logging', autoban='$autoban', mail='$mail', redirect='$redirect' WHERE id=1");
+    file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
 }
 ?>
 <div class="content-wrapper">
@@ -81,12 +74,8 @@ if (isset($_POST['save'])) {
 				<div class="col-md-8">
                     	    
 <?php
-$table    = $prefix . 'spam-settings';
-$query    = $mysqli->query("SELECT * FROM `$table`");
-$row      = mysqli_fetch_array($query);
-$tablesp2 = $prefix . 'dnsbl-databases';
-$querysp2 = $mysqli->query("SELECT * FROM `$tablesp2`");
-if ($row['protection'] == 1 && mysqli_num_rows($querysp2) > 0) {
+$querysp = $mysqli->query("SELECT * FROM `psec_dnsbl-databases`");
+if ($settings['spam_protection'] == 1 && mysqli_num_rows($querysp) > 0) {
     echo '
               <div class="card card-solid card-success">
 ';
@@ -101,14 +90,14 @@ if ($row['protection'] == 1 && mysqli_num_rows($querysp2) > 0) {
 						</div>
 						<div class="card-body">
 <?php
-if ($row['protection'] == 1 && mysqli_num_rows($querysp2) > 0) {
+if ($settings['spam_protection'] == 1 && mysqli_num_rows($querysp) > 0) {
     echo '
-        <h1 style="color: #47A447;"><i class="fas fa-check-circle"></i> Enabled</h1>
+        <h1 class="pm_enabled"><i class="fas fa-check-circle"></i> Enabled</h1>
         <p>The website is protected from <strong>Spammers</strong></p>
 ';
 } else {
     echo '
-        <h1 style="color: #d2322d;"><i class="fas fa-times-circle"></i> Disabled</h1>
+        <h1 class="pm_disabled"><i class="fas fa-times-circle"></i> Disabled</h1>
         <p>The website is not protected from <strong>Spammers</strong></p>
 ';
 }
@@ -146,8 +135,18 @@ if ($row['protection'] == 1 && mysqli_num_rows($querysp2) > 0) {
         </div>
     </div>
 </form>
+
+<?php
+if (mysqli_num_rows($querysp) > 3) {
+    echo '
+        <div class="callout callout-warning">
+			It is NOT recommended to use more than <b>3 spam databases</b> because performance and accuracy could be affected in negative way.
+		</div>';
+}
+?>
+
 <div class="table-responsive">                
-<table class="table table-bordered table-hover">
+	<table class="table table-bordered table-hover">
 									<thead>
 										<tr>
 											<th><i class="fas fa-database"></i> DNSBL Database</th>
@@ -156,8 +155,7 @@ if ($row['protection'] == 1 && mysqli_num_rows($querysp2) > 0) {
 									</thead>
 									<tbody>
 <?php
-$table = $prefix . 'dnsbl-databases';
-$query = $mysqli->query("SELECT * FROM `$table`");
+$query = $mysqli->query("SELECT * FROM `psec_dnsbl-databases`");
 while ($rowd = $query->fetch_assoc()) {
     echo '
 										<tr>
@@ -200,8 +198,8 @@ while ($rowd = $query->fetch_assoc()) {
 <form class="form-horizontal form-bordered" action="" method="post">
 										<li class="list-group-item">
 											<p>Protection</p>
-														<input type="checkbox" name="protection" class="psec-switch" <?php
-if ($row['protection'] == 1) {
+                                            <input type="checkbox" name="protection" class="psec-switch" <?php
+if ($settings['spam_protection'] == 1) {
     echo 'checked="checked"';
 }
 ?> /><br />
@@ -209,26 +207,17 @@ if ($row['protection'] == 1) {
 										</li>
 										<li class="list-group-item">
 											<p>Logging</p>
-														<input type="checkbox" name="logging" class="psec-switch" <?php
-if ($row['logging'] == 1) {
+                                            <input type="checkbox" name="logging" class="psec-switch" <?php
+if ($settings['spam_logging'] == 1) {
     echo 'checked="checked"';
 }
 ?> /><br />
 											<span class="text-muted">Logs the detected threats</span>
 										</li>
-										<li class="list-group-item">
-											<p>AutoBan</p>
-														<input type="checkbox" name="autoban" class="psec-switch" <?php
-if ($row['autoban'] == 1) {
-    echo 'checked="checked"';
-}
-?> /><br />
-											<span class="text-muted">Automatically bans the detected threats</span>
-										</li>
                                         <li class="list-group-item">
 											<p>Mail Notifications</p>
-														<input type="checkbox" name="mail" class="psec-switch" <?php
-if ($row['mail'] == 1) {
+											<input type="checkbox" name="mail" class="psec-switch" <?php
+if ($settings['spam_mail'] == 1) {
     echo 'checked="checked"';
 }
 ?> /><br />
@@ -237,7 +226,7 @@ if ($row['mail'] == 1) {
                                         <li class="list-group-item">
 											<p>Redirect URL</p>
 											<input name="redirect" class="form-control" type="text" value="<?php
-echo $row['redirect'];
+echo $settings['spam_redirect'];
 ?>" required>
 										</li>
 									</ul>
@@ -260,13 +249,6 @@ echo $row['redirect'];
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-var elems = Array.prototype.slice.call(document.querySelectorAll('.psec-switch'));
-
-elems.forEach(function(html) {
-  var switchery = new Switchery(html, {secondaryColor: 'red'});
-});
-</script>
 <?php
 footer();
 ?>

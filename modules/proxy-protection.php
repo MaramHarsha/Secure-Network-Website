@@ -1,20 +1,16 @@
 <?php
 //Proxy Protection
-$table = $prefix . 'proxy-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = $query->fetch_assoc();
-
-$cache_file = __DIR__ . "/cache/proxy/". $ip .".json";
+$cache_file = __DIR__ . "/cache/proxy/". str_replace(":", "-", $ip) .".json";
 
 //Method 1
-if ($row['protection'] > 0) {
+if ($settings['proxy_protection'] > 0) {
     
     $proxyv = 0;
     
-    if ($row['protection'] == 1) {
+    if ($settings['proxy_protection'] == 1) {
         
-        if (psec_getcache($ip, $cache_file) == 'PSEC_NoCache') {
-            $key = $row['api1'];
+        if (psec_getcache($cache_file) == 'PSEC_NoCache') {
+            $key = $settings['proxy_api1'];
             
             $ch  = curl_init();
             $url = 'http://v2.api.iphub.info/ip/' . $ip . '';
@@ -31,17 +27,17 @@ if ($row['protection'] > 0) {
 			// Grabs API Response and Caches
 			file_put_contents($cache_file, $choutput);
         } else {
-            @$block = json_decode(psec_getcache($ip, $cache_file))->block;
+            @$block = json_decode(psec_getcache($cache_file))->block;
         }
         
         if ($block == 1) {
             $proxyv = 1;
         }
         
-    } else if ($row['protection'] == 2) {
+    } else if ($settings['proxy_protection'] == 2) {
         
-        if (psec_getcache($ip, $cache_file) == 'PSEC_NoCache') {
-            $key = $row['api2'];
+        if (psec_getcache($cache_file) == 'PSEC_NoCache') {
+            $key = $settings['proxy_api2'];
             
             $ch           = curl_init('http://proxycheck.io/v2/' . $ip . '?key=' . $key . '&vpn=1');
             $curl_options = array(
@@ -57,22 +53,22 @@ if ($row['protection'] > 0) {
 			// Grabs API Response and Caches
 			file_put_contents($cache_file, $response);
         } else {
-            $jsonc = json_decode(psec_getcache($ip, $cache_file));
+            $jsonc = json_decode(psec_getcache($cache_file));
         }
         
         if (isset($jsonc->$ip->proxy) && $jsonc->$ip->proxy == "yes") {
             $proxyv = 1;
         }
         
-    } else if ($row['protection'] == 3) {
+    } else if ($settings['proxy_protection'] == 3) {
         
-        if (psec_getcache($ip, $cache_file) == 'PSEC_NoCache') {
-            $key = $row['api3'];
+        if (psec_getcache($cache_file) == 'PSEC_NoCache') {
+            $key = $settings['proxy_api3'];
             
             $headers = [
 				'X-Key: '.$key,
             ];
-            $ch = curl_init("http://www.iphunter.info:8082/v1/ip/" . $ip);
+            $ch = curl_init("https://www.iphunter.info:8082/v1/ip/" . $ip);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -91,16 +87,16 @@ if ($row['protection'] > 0) {
 				file_put_contents($cache_file, $choutput);
             }
         } else {
-            $output = json_decode(psec_getcache($ip, $cache_file), 1);
+            $output = json_decode(psec_getcache($cache_file), 1);
             
             if ($output['data']['block'] == 1) {
                 $proxyv = 1;
             }
         }
         
-    } else if ($row['protection'] == 4) {
+    } else if ($settings['proxy_protection'] == 4) {
         
-        if (psec_getcache($ip, $cache_file) == 'PSEC_NoCache') {
+        if (psec_getcache($cache_file) == 'PSEC_NoCache') {
             
             $url = 'http://blackbox.ipinfo.app/lookup/' . $ip;
 			$ch  = curl_init();
@@ -112,7 +108,7 @@ if ($row['protection'] > 0) {
 			curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
 			curl_setopt($ch, CURLOPT_REFERER, "https://google.com");
 			$proxyresponse = curl_exec($ch);
-			$httpCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+			$httpCode      = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
 			curl_close($ch);
             
             if ($proxyresponse == 'Y') {
@@ -123,7 +119,7 @@ if ($row['protection'] > 0) {
 			// Grabs API Response and Caches
 			file_put_contents($cache_file, $proxyresponse);
         } else {
-            $proxyresponse = psec_getcache($ip, $cache_file);
+            $proxyresponse = psec_getcache($cache_file);
             
             if ($proxyresponse == 'Y') {
                 $proxyv = 1;
@@ -137,27 +133,22 @@ if ($row['protection'] > 0) {
         $type = "Proxy";
         
         //Logging
-        if ($row['logging'] == 1) {
-            psec_logging($mysqli, $prefix, $type);
-        }
-        
-        //AutoBan
-        if ($row['autoban'] == 1) {
-            psec_autoban($mysqli, $prefix, $type);
+        if ($settings['proxy_logging'] == 1) {
+            psec_logging($mysqli, $type);
         }
         
         //E-Mail Notification
-        if ($srow['mail_notifications'] == 1 && $row['mail'] == 1) {
-            psec_mail($mysqli, $prefix, $site_url, $projectsecurity_path, $type, $srow['email']);
+        if ($settings['mail_notifications'] == 1 && $settings['proxy_mail'] == 1) {
+            psec_mail($mysqli, $type);
         }
         
-        echo '<meta http-equiv="refresh" content="0;url=' . $row['redirect'] . '?element=api' . $row['protection'] . '" />';
+        echo '<meta http-equiv="refresh" content="0;url=' . $settings['proxy_redirect'] . '?element=api' . $settings['proxy_protection'] . '" />';
         exit;
     }
 }
 
 //Method 2
-if ($row['protection2'] == 1) {
+if ($settings['proxy_protection2'] == 1) {
     $proxy_headers = array(
         'HTTP_VIA',
         'VIA',
@@ -188,21 +179,16 @@ if ($row['protection2'] == 1) {
             $type = "Proxy";
             
             //Logging
-            if ($row['logging'] == 1) {
-                psec_logging($mysqli, $prefix, $type);
-            }
-            
-            //AutoBan
-            if ($row['autoban'] == 1) {
-                psec_autoban($mysqli, $prefix, $type);
+            if ($settings['proxy_logging'] == 1) {
+                psec_logging($mysqli, $type);
             }
             
             //E-Mail Notification
-            if ($srow['mail_notifications'] == 1 && $row['mail'] == 1) {
-                psec_mail($mysqli, $prefix, $site_url, $projectsecurity_path, $type, $srow['email']);
+            if ($settings['mail_notifications'] == 1 && $settings['proxy_mail'] == 1) {
+                psec_mail($mysqli, $type);
             }
             
-            echo '<meta http-equiv="refresh" content="0;url=' . $row['redirect'] . '?element=' . $x . '" />';
+            echo '<meta http-equiv="refresh" content="0;url=' . $settings['proxy_redirect'] . '?element=' . $x . '" />';
             exit;
         }
     }

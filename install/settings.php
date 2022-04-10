@@ -8,7 +8,7 @@ if (isset($_POST['username'])) {
     $_SESSION['username'] = '';
 }
 if (isset($_POST['password'])) {
-    $_SESSION['password'] = $_POST['password'];
+    $_SESSION['password'] = addslashes($_POST['password']);
 } else {
     $_SESSION['password'] = '';
 }
@@ -19,31 +19,27 @@ if (isset($_POST['password'])) {
 				<div class="form-group row">
 					<p class="col-sm-3">Username: </p>
 					<div class="col-sm-8">
-					<div class="input-group">
-					    <div class="input-group-prepend">
-							<span class="input-group-text">
+                        <div class="input-group">
+							<div class="input-group-text">
 								<i class="fas fa-user"></i>
-							</span>
-						</div>
-						<input type="text" name="username" class="form-control" placeholder="admin" value="<?php
+							</div>
+							<input type="text" name="username" class="form-control" placeholder="admin" value="<?php
 echo $_SESSION['username'];
 ?>" required>
-				    </div>
+                        </div>
 					</div>
 				</div>
 				<div class="form-group row">
 					<p class="col-sm-3">Password: </p>
 					<div class="col-sm-8">
-					<div class="input-group">
-					    <div class="input-group-prepend">
-							<span class="input-group-text">
+                        <div class="input-group">
+							<div class="input-group-text">
 								<i class="fas fa-key"></i>
-							</span>
-					    </div>
-						<input type="text" name="password" class="form-control" placeholder="" value="<?php
+							</div>
+							<input type="text" name="password" class="form-control" placeholder="" value="<?php
 echo $_SESSION['password'];
 ?>" required>
-					</div>
+                        </div>
 					</div>
 				</div>
 				
@@ -57,12 +53,12 @@ if (isset($_POST['submit'])) {
 ?>
 					<br /><div class="row">
 	                    <div class="col-md-6">
-							<a href="index.php" class="btn-secondary btn btn-block"><i class="fas fa-arrow-left"></i> Back</a>
+							<a href="index.php" class="btn-secondary btn col-12"><i class="fas fa-arrow-left"></i> Back</a>
 						</div>
 						<div class="col-md-6">
-							<input class="btn-primary btn btn-block" type="submit" name="submit" value="Next" />
+							<input class="btn-primary btn col-12" type="submit" name="submit" value="Next" />
 						</div>
-					</div>
+					</div><br />
 				
 				</form>
 				</div>

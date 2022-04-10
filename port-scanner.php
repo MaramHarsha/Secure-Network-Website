@@ -1,5 +1,5 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 ?>
 <div class="content-wrapper">
@@ -112,10 +112,10 @@ ini_set('memory_limit', '512M');
         $prot = getservbyport($port, "tcp");
         echo "<tr><td>$port</td><td>$prot</td>";
         if ($val) {
-            echo '<td><a href="http://' . $_SERVER['SERVER_NAME'] . ':' . $port . '" target="_blank" class="badge badge-danger" style="font-size: 13px;"><i class="fas fa-unlock"></i> Open</a></td></tr>';
+            echo '<td><a href="http://' . $_SERVER['SERVER_NAME'] . ':' . $port . '" target="_blank" class="badge badge-danger" class="font13"><i class="fas fa-unlock"></i> Open</a></td></tr>';
         } else {
             echo '
-			<td><font class="badge badge-success" style="font-size: 13px;"><i class="fas fa-lock"></i> Closed</font></td></tr>';
+			<td><font class="badge badge-success" class="font13"><i class="fas fa-lock"></i> Closed</font></td></tr>';
         }
     }
     
@@ -149,20 +149,6 @@ ini_set('memory_limit', '512M');
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-$(document).ready(function() {
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>
 <?php
 footer();
 ?>

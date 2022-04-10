@@ -1,42 +1,34 @@
 <?php
 //Bad Words
-$table   = $prefix . 'bad-words';
-$queryfc = $mysqli->query("SELECT * FROM `$table`");
+$queryfc = $mysqli->query("SELECT * FROM `psec_bad-words`");
 $countfc = mysqli_num_rows($queryfc);
 
 if ($countfc > 0) {
     
     //Content Filtering
-    function bad_words($buffer, $mysqli, $prefix)
+    function bad_words($buffer, $mysqli)
     {
-        
-        $table  = $prefix . 'bad-words';
-        $query1 = $mysqli->query("SELECT * FROM `$table`");
-        $table  = $prefix . 'settings';
-        $squery = $mysqli->query("SELECT * FROM `$table`");
-        $srow   = $squery->fetch_assoc();
-        
+        global $settings;
+		
+		$query1 = $mysqli->query("SELECT * FROM `psec_bad-words`");
+
         while ($row1 = $query1->fetch_array()) {
-            $buffer = str_replace($row1['word'], $srow['badword_replace'], $buffer);
+            $buffer = str_replace($row1['word'], $settings['badword_replace'], $buffer);
         }
         
         return $buffer;
     }
     
-    //ob_start();
-    ob_start(function($buffer) use ($mysqli, $prefix)
-    {
-    return bad_words($buffer, $mysqli, $prefix);
+    ob_start(function($buffer) use ($mysqli) {
+        return bad_words($buffer, $mysqli);
     });
     
     //POST Filtering
-    function badwords_checker($input, $mysqli, $prefix)
+    function badwords_checker($input, $mysqli)
     {
-        $table  = $prefix . 'settings';
-        $squery = $mysqli->query("SELECT * FROM `$table`");
-        $srow   = $squery->fetch_assoc();
-        $table2 = $prefix . 'bad-words';
-        $query2 = $mysqli->query("SELECT * FROM `$table2`");
+        global $settings;
+		
+		$query2 = $mysqli->query("SELECT * FROM `psec_bad-words`");
         
         while ($row2 = $query2->fetch_array()) {
             $badwords2[] = $row2['word'];
@@ -44,12 +36,12 @@ if ($countfc > 0) {
         
         if (is_array($input)) {
             foreach ($input as $var => $val) {
-                $output[$var] = badwords_checker($val, $mysqli, $prefix);
+                $output[$var] = badwords_checker($val, $mysqli);
             }
         } else {
-            $query2 = $mysqli->query("SELECT * FROM `$table2`");
+            $query2 = $mysqli->query("SELECT * FROM `psec_bad-words`");
             while ($row3 = $query2->fetch_array()) {
-                $input = str_replace($row3['word'], $srow['badword_replace'], $input);
+                $input = str_replace($row3['word'], $settings['badword_replace'], $input);
                 
             }
             $output = $input;
@@ -57,7 +49,7 @@ if ($countfc > 0) {
         return @$output;
     }
     
-    $_POST = badwords_checker($_POST, $mysqli, $prefix);
+    $_POST = badwords_checker($_POST, $mysqli);
     //$_GET  = badwords_checker($_GET);
 }
 ?>

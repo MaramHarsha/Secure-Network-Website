@@ -1,29 +1,28 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_POST['add-word'])) {
-    $table      = $prefix . 'bad-words';
     $word       = $_POST['word'];
-    $queryvalid = $mysqli->query("SELECT * FROM `$table` WHERE `word`='$word' LIMIT 1");
+	
+    $queryvalid = $mysqli->query("SELECT * FROM `psec_bad-words` WHERE `word`='$word' LIMIT 1");
     $validator  = mysqli_num_rows($queryvalid);
     if ($validator > "0") {
     } else {
-        $query = $mysqli->query("INSERT INTO `$table` (`word`) VALUES ('$word')");
+        $query = $mysqli->query("INSERT INTO `psec_bad-words` (`word`) VALUES ('$word')");
     }
 }
 
 if (isset($_GET['delete-id'])) {
     $id    = (int) $_GET["delete-id"];
-    $table = $prefix . 'bad-words';
-    $query = $mysqli->query("DELETE FROM `$table` WHERE id='$id'");
+    
+    $query = $mysqli->query("DELETE FROM `psec_bad-words` WHERE id='$id'");
 }
 
 if (isset($_POST['save'])) {
-    $table = $prefix . 'settings';
-    
-    $badword_replace = $_POST['badword-replace'];
-    $update          = $mysqli->query("UPDATE `$table` SET badword_replace='$badword_replace' WHERE id=1");
+    $settings['badword_replace'] = $_POST['badword-replace'];
+	
+    file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
 }
 ?>
 <div class="content-wrapper">
@@ -56,11 +55,7 @@ if (isset($_POST['save'])) {
 				<div class="col-md-8">
                     	    
 <?php
-$table   = $prefix . 'settings';
-$query   = $mysqli->query("SELECT * FROM `$table`");
-$row     = mysqli_fetch_array($query);
-$table   = $prefix . 'bad-words';
-$queryfc = $mysqli->query("SELECT * FROM `$table`");
+$queryfc = $mysqli->query("SELECT * FROM `psec_bad-words`");
 $countfc = mysqli_num_rows($queryfc);
 if ($countfc > 0) {
     echo '
@@ -79,12 +74,12 @@ if ($countfc > 0) {
 <?php
 if ($countfc > 0) {
     echo '
-        <h1 style="color: #47A447;"><i class="fas fa-check-circle"></i> Enabled</h1>
+        <h1 class="pm_enabled"><i class="fas fa-check-circle"></i> Enabled</h1>
         <p>The bad words are <strong>Filtered</strong></p>
 ';
 } else {
     echo '
-        <h1 style="color: #007bff;"><i class="fas fa-times-circle"></i> Disabled</h1>
+        <h1 class="pm_disabledblue"><i class="fas fa-times-circle"></i> Disabled</h1>
         <p>The bad words are not <strong>Filtered</strong></p>
 ';
 }
@@ -104,7 +99,7 @@ if ($countfc > 0) {
 						    <div class="form-group">
 								<label class="control-label"><i class="fas fa-pen-square"></i> Replacement Word</label>
 								<input type="text" name="badword-replace" value="<?php
-echo $row['badword_replace'];
+echo $settings['badword_replace'];
 ?>" class="form-control">
 							</div>
 						
@@ -136,7 +131,7 @@ echo $row['badword_replace'];
         </div>
     </div>
 </form>               
-<table id="dt-basic" class="table table-bordered table-hover table-sm">
+<table id="dt-basicbadwords" class="table table-bordered table-hover table-sm">
 									<thead class="<?php echo $thead; ?>">
 										<tr>
 											<th>Bad Word</th>
@@ -145,8 +140,7 @@ echo $row['badword_replace'];
 									</thead>
 									<tbody>
 <?php
-$table = $prefix . 'bad-words';
-$query = $mysqli->query("SELECT * FROM `$table`");
+$query = $mysqli->query("SELECT * FROM `psec_bad-words`");
 while ($rowd = $query->fetch_assoc()) {
     echo '
 										<tr>
@@ -196,22 +190,7 @@ while ($rowd = $query->fetch_assoc()) {
 			</div>
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
-</div>
-<script>
-$(document).ready(function() {
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-        "order": [[ 0, "asc" ]],
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>    
+</div>   
 <?php
 footer();
 ?>

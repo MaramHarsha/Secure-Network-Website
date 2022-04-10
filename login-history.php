@@ -1,5 +1,5 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 ?>
 <div class="content-wrapper">
@@ -36,7 +36,7 @@ head();
 							<h3 class="card-title">Login History</h3>
 						</div>
 						<div class="card-body">
-<table id="dt-basic" class="table table-bordered table-hover table-sm">
+<table id="dt-basicloghist" class="table table-bordered table-hover table-sm">
 									<thead class="<?php echo $thead; ?>">
 										<tr>
 											<th><i class="fas fa-user"></i> Username</th>
@@ -48,8 +48,7 @@ head();
 									</thead>
 									<tbody>
 <?php
-$table = $prefix . 'logins';
-$query = $mysqli->query("SELECT * FROM `$table` ORDER BY id DESC");
+$query = $mysqli->query("SELECT * FROM `psec_logins` ORDER BY id DESC");
 while ($row = $query->fetch_assoc()) {
     echo '
 										<tr>
@@ -87,21 +86,6 @@ while ($row = $query->fetch_assoc()) {
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-$(document).ready(function() {
-
-	$('#dt-basic').dataTable( {
-		"responsive": true,
-		"order": [[ 2, "desc" ]],
-		"language": {
-			"paginate": {
-			  "previous": '<i class="fas fa-angle-left"></i>',
-			  "next": '<i class="fas fa-angle-right"></i>'
-			}
-		}
-	} );
-} );
-</script>
 <?php
 footer();
 ?>

@@ -1,5 +1,5 @@
 <?php
-require_once "core.php";
+require "core.php";
 head();
 
 if (isset($_GET['api'])) {
@@ -8,9 +8,10 @@ if (isset($_GET['api'])) {
     
     if ($apid == 0 || $apid == 1 || $apid == 2 || $apid == 3 || $apid == 4) {
         
-        $table = $prefix . 'proxy-settings';
-        $query = $mysqli->query("UPDATE `$table` SET protection='$apid' WHERE id=1");
-        
+        $settings['proxy_protection'] = $apid;
+
+		file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
+
 		$files = glob('modules/cache/proxy/*'); // Get all cache file names
 		foreach($files as $file){ // Iterate cache files
 			if(is_file($file)) {
@@ -21,24 +22,20 @@ if (isset($_GET['api'])) {
 }
 
 if (isset($_POST['save2'])) {
-    $table = $prefix . 'proxy-settings';
-    
-    $queryas = $mysqli->query("SELECT * FROM `$table`");
-    $rowas   = mysqli_fetch_array($queryas);
-    $apiks   = 'api' . $rowas['protection'];
+
+    $apiks = 'proxy_api' . $settings['proxy_protection'];
     
     if (isset($_POST['protection2'])) {
-        $protection2 = 1;
+        $settings['proxy_protection2'] = 1;
     } else {
-        $protection2 = 0;
+        $settings['proxy_protection2'] = 0;
     }
     
-    $query = $mysqli->query("UPDATE `$table` SET protection2='$protection2' WHERE id=1");
-
-    if ($rowas['protection'] > 0) {
-		if ($rowas['protection'] != 4) {
+    if ($settings['proxy_protection'] > 0) {
+		if ($settings['proxy_protection'] != 4) {
 			$api_key = $_POST['apikey'];
-			$query = $mysqli->query("UPDATE `$table` SET $apiks='$api_key' WHERE id=1");
+			
+			$settings[$apiks] = $api_key;
 		}
 		
 		$files = glob('modules/cache/proxy/*'); // Get all cache file names
@@ -48,32 +45,27 @@ if (isset($_POST['save2'])) {
 			}
 		}
 	}
+	
+	file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
 }
 
 if (isset($_POST['save'])) {
-    $table = $prefix . 'proxy-settings';
-    
+
     if (isset($_POST['logging'])) {
-        $logging = 1;
+        $settings['proxy_logging'] = 1;
     } else {
-        $logging = 0;
-    }
-    
-    if (isset($_POST['autoban'])) {
-        $autoban = 1;
-    } else {
-        $autoban = 0;
+        $settings['proxy_logging'] = 0;
     }
     
     if (isset($_POST['mail'])) {
-        $mail = 1;
+        $settings['proxy_mail'] = 1;
     } else {
-        $mail = 0;
+        $settings['proxy_mail'] = 0;
     }
     
-    $redirect = $_POST['redirect'];
+    $settings['proxy_redirect'] = $_POST['redirect'];
     
-    $query = $mysqli->query("UPDATE `$table` SET logging='$logging', autoban='$autoban', mail='$mail', redirect='$redirect' WHERE id=1");
+    file_put_contents('config_settings.php', '<?php $settings = ' . var_export($settings, true) . '; ?>');
 }
 ?>
 <div class="content-wrapper">
@@ -106,10 +98,7 @@ if (isset($_POST['save'])) {
 				<div class="col-md-8">
                     	    
 <?php
-$table = $prefix . 'proxy-settings';
-$query = $mysqli->query("SELECT * FROM `$table`");
-$row   = mysqli_fetch_array($query);
-if ($row['protection'] > 0 OR $row['protection2'] == 1) {
+if ($settings['proxy_protection'] > 0 OR $settings['proxy_protection2'] == 1) {
     echo '
               <div class="card card-solid card-success">
 ';
@@ -124,14 +113,14 @@ if ($row['protection'] > 0 OR $row['protection2'] == 1) {
 						</div>
 						<div class="card-body">
 <?php
-if ($row['protection'] > 0 OR $row['protection2'] == 1) {
+if ($settings['proxy_protection'] > 0 OR $settings['proxy_protection2'] == 1) {
     echo '
-        <h1 style="color: #47A447;"><i class="fas fa-check-circle"></i> Enabled</h1>
+        <h1 class="pm_enabled"><i class="fas fa-check-circle"></i> Enabled</h1>
         <p>The website is protected from <strong>Proxies</strong></p>
 ';
 } else {
     echo '
-        <h1 style="color: #d2322d;"><i class="fas fa-times-circle"></i> Disabled</h1>
+        <h1 class="pm_disabled"><i class="fas fa-times-circle"></i> Disabled</h1>
         <p>The website is not protected from <strong>Proxies</strong></p>
 ';
 }
@@ -155,36 +144,36 @@ if ($row['protection'] > 0 OR $row['protection2'] == 1) {
 										<div class="col-md-6">
 										<div class="dropdown">
 										  <button class="btn btn-<?php
-if ($row['protection'] == 0) {
+if ($settings['proxy_protection'] == 0) {
     echo 'danger';
 } else {
     echo 'success';
 }
-?> dropdown-toggle float-right" style="width: 100%;" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Proxy Detection API</button>
-										  <div class="dropdown-menu" style="width: 100%;">
+?> dropdown-toggle float-right" class="width100" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Proxy Detection API</button>
+										  <div class="dropdown-menu" class="width100">
 										    <a class="dropdown-item <?php
-if ($row['protection'] == 0) {
+if ($settings['proxy_protection'] == 0) {
     echo 'active';
 }
 ?>" href="?api=0">Disabled</a>
 											<div class="dropdown-divider"></div>
 										    <a class="dropdown-item <?php
-if ($row['protection'] == 1) {
+if ($settings['proxy_protection'] == 1) {
     echo 'active';
 }
 ?>" href="?api=1">IPHub</a>
 										    <a class="dropdown-item <?php
-if ($row['protection'] == 2) {
+if ($settings['proxy_protection'] == 2) {
     echo 'active';
 }
 ?>" href="?api=2">ProxyCheck</a>
 											<a class="dropdown-item <?php
-if ($row['protection'] == 3) {
+if ($settings['proxy_protection'] == 3) {
     echo 'active';
 }
 ?>" href="?api=3">IPHunter</a>
 											<a class="dropdown-item <?php
-if ($row['protection'] == 4) {
+if ($settings['proxy_protection'] == 4) {
     echo 'active';
 }
 ?>" href="?api=4">BlackBox</a>
@@ -196,14 +185,14 @@ if ($row['protection'] == 4) {
                                         Connects with Proxy Detection API and verifies if the visitor is using a Proxy, VPN or TOR
                                         <br /><br />
 <?php
-if ($row['protection'] > 0 && $row['protection'] != 4) {
+if ($settings['proxy_protection'] > 0 && $settings['proxy_protection'] != 4) {
     
-    $apik = 'api' . $row['protection'];
-    $key  = $row[$apik];
+    $apik = 'proxy_api' . $settings['proxy_protection'];
+    $key  = $settings[$apik];
     
     $proxy_check = 0;
     
-    if ($row['protection'] == 1) {
+    if ($settings['proxy_protection'] == 1) {
         //Invalid API Key ==> Offline
         $ch  = curl_init();
         $url = "http://v2.api.iphub.info/ip/8.8.8.8";
@@ -220,16 +209,16 @@ if ($row['protection'] > 0 && $row['protection'] != 4) {
         if ($httpCode >= 200 && $httpCode < 300) {
             $proxy_check = 1;
         }
-    } else if ($row['protection'] == 2) {
+    } else if ($settings['proxy_protection'] == 2) {
         
         $proxy_check = 1;
         
-    } else if ($row['protection'] == 3) {
+    } else if ($settings['proxy_protection'] == 3) {
         //Invalid API Key ==> Offline
         $headers = [
 			'X-Key: '.$key.'',
         ];
-        $ch = curl_init("http://www.iphunter.info:8082/v1/ip/8.8.8.8");
+        $ch = curl_init("https://www.iphunter.info:8082/v1/ip/8.8.8.8");
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -247,12 +236,12 @@ if ($row['protection'] > 0 && $row['protection'] != 4) {
         echo '<div class="callout callout-warning" role="callout">Invalid API Key, Limit Exceeded or API is Offline</div>';
     }
     
-    if ($row[$apik] == NULL OR $proxy_check == 0) {
-        if ($row['protection'] == 1) {
+    if ($settings[$apik] == NULL OR $proxy_check == 0) {
+        if ($settings['proxy_protection'] == 1) {
             $apik_url = 'https://iphub.info/pricing';
-        } else if ($row['protection'] == 2) {
+        } else if ($settings['proxy_protection'] == 2) {
             $apik_url = 'https://proxycheck.io/pricing';
-        } else if ($row['protection'] == 3) {
+        } else if ($settings['proxy_protection'] == 3) {
             $apik_url = 'https://www.iphunter.info/prices';
         }
 ?>
@@ -265,11 +254,11 @@ if ($row['protection'] > 0 && $row['protection'] != 4) {
 											
 											<p>API Key</p>
 											<input name="apikey" class="form-control" type="text" value="<?php
-    echo $row[$apik];
+    echo $settings[$apik];
 ?>" required>
 <?php
 }
-if ($row['protection'] == 4) {
+if ($settings['proxy_protection'] == 4) {
 	if (isset($_SERVER['HTTP_USER_AGENT'])) {
 		$useragent = $_SERVER['HTTP_USER_AGENT'];
 	} else {
@@ -309,7 +298,7 @@ if ($row['protection'] == 4) {
 												</div>
 												<div class="col-md-2">
 													<input type="checkbox" name="protection2" class="psec-switch" <?php
-if ($row['protection2'] == 1) {
+if ($settings['proxy_protection2'] == 1) {
     echo 'checked="checked"';
 }
 ?> />
@@ -346,25 +335,16 @@ if ($row['protection2'] == 1) {
 										<li class="list-group-item">
 											<p>Logging</p>
 												<input type="checkbox" name="logging" class="psec-switch" <?php
-if ($row['logging'] == 1) {
+if ($settings['proxy_logging'] == 1) {
     echo 'checked="checked"';
 }
 ?> /><br />
 											<span class="text-muted">Logs the detected threats</span>
 										</li>
-										<li class="list-group-item">
-											<p>AutoBan</p>
-												<input type="checkbox" name="autoban" class="psec-switch" <?php
-if ($row['autoban'] == 1) {
-    echo 'checked="checked"';
-}
-?> /><br />
-											<span class="text-muted">Automatically bans the detected threats</span>
-										</li>
                                         <li class="list-group-item">
 											<p>Mail Notifications</p>
 												<input type="checkbox" name="mail" class="psec-switch" <?php
-if ($row['mail'] == 1) {
+if ($settings['proxy_mail'] == 1) {
     echo 'checked="checked"';
 }
 ?> /><br />
@@ -373,7 +353,7 @@ if ($row['mail'] == 1) {
                                         <li class="list-group-item">
 											<p>Redirect URL</p>
 											<input name="redirect" class="form-control" type="text" value="<?php
-echo $row['redirect'];
+echo $settings['proxy_redirect'];
 ?>" required>
 										</li>
 									</ul>
@@ -396,13 +376,6 @@ echo $row['redirect'];
 			<!--===================================================-->
 			<!--END CONTENT CONTAINER-->
 </div>
-<script>
-var elems = Array.prototype.slice.call(document.querySelectorAll('.psec-switch'));
-
-elems.forEach(function(html) {
-  var switchery = new Switchery(html, {secondaryColor: 'red'});
-});
-</script>
 <?php
 footer();
 ?>
