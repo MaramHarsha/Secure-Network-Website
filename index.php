@@ -128,7 +128,7 @@ if ($error == 1) {
                     <button type="submit" name="signin" class="btn btn-md btn-primary btn-block btn-flat"><i class="fas fa-sign-in-alt"></i>
 &nbsp;Sign In</button>
                     <p class="mb-1">
-                        <a href="https://codecanyon.net/item/project-security-website-security-antivirus-firewall/15487703/faqs/44196" target="_blank">Forgotten password</a>
+                        <a href="https://github.com/MaramHarsha/Forget-password-for-secure-network" target="_blank">Forgotten password</a>
                     </p>
                 </div>
             </div>
